@@ -1,0 +1,40 @@
+{
+  "name": "stogz-client",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "next -p 3031",
+    "build": "next build",
+    "start": "next start",
+    "type-check": "tsc",
+    "generateTypes": "apollo-codegen introspect-schema http://localhost:3030/graphql --output schema.json && apollo codegen:generate --localSchemaFile=schema.json --target=typescript --includes=src/**/*.ts --tagName=gql --addTypename --globalTypesFile=src/types/graphql-global-types.ts types"
+  },
+  "dependencies": {
+    "@apollo/client": "^3.3.7",
+    "@auth0/nextjs-auth0": "^0.16.0",
+    "@chakra-ui/react": "^1.1.4",
+    "@emotion/react": "^11.1.4",
+    "@emotion/styled": "^11.0.0",
+    "apollo-boost": "^0.4.9",
+    "axios": "latest",
+    "env-guard": "^1.0.3",
+    "framer-motion": "^3.2.1",
+    "graphql": "^15.5.0",
+    "next": "latest",
+    "next-with-apollo": "^5.1.0",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "react-icons": "latest",
+    "react-select": "^4.0.2",
+    "use-debounce": "^5.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^12.12.21",
+    "@types/react": "^16.9.16",
+    "@types/react-dom": "^16.9.4",
+    "@types/react-select": "^4.0.12",
+    "apollo": "^2.32.1",
+    "apollo-codegen": "^0.20.2",
+    "typescript": "4.0"
+  },
+  "license": "MIT"
+}

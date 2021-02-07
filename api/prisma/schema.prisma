@@ -1,0 +1,52 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id         Int         @id @default(autoincrement())
+  createdAt  DateTime    @default(now())
+  sub        String      @unique
+  email      String?     @unique
+  givenName  String?
+  familyName String?
+  picture    String?
+  watchlists Watchlist[]
+
+  @@index([sub])
+  @@index([email])
+  @@map("users")
+}
+
+model Share {
+  id          Int         @id @default(autoincrement())
+  createAt    DateTime    @default(now())
+  name        String
+  symbol      String      @unique
+  type        String
+  region      String
+  currency    String
+  marketOpen  String
+  marketClose String
+  timezone    String
+  watchlists  Watchlist[]
+
+  @@index([name])
+  @@index([symbol])
+  @@map("shares")
+}
+
+model Watchlist {
+  id       Int      @id @default(autoincrement())
+  createAt DateTime @default(now())
+  name     String
+  user     User     @relation(fields: [userId], references: [id])
+  userId   Int
+  shares   Share[]
+
+  @@map("watchlists")
+}
