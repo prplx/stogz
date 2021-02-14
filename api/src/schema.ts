@@ -10,7 +10,9 @@ import {
   mutationType,
 } from 'nexus';
 import { nexusPrisma } from 'nexus-plugin-prisma';
-import { transformAlphaVantageSymbolSearchResponse } from './helpers';
+import { transformAlphaVantageSymbolSearchResponse, only } from './helpers';
+import { mhgetall, mhmset } from './services/redis';
+import { diff } from 'fast-array-diff';
 
 export default makeSchema({
   shouldGenerateArtifacts: true,
@@ -21,6 +23,10 @@ export default makeSchema({
         alias: 'PrismaClient',
       },
     ],
+  },
+  contextType: {
+    module: path.join(__dirname, './context.ts'),
+    export: 'Context',
   },
   outputs: {
     typegen: path.join(__dirname, '../typegen.d.ts'),
@@ -50,21 +56,64 @@ export default makeSchema({
       definition(t) {
         t.model.id();
         t.model.name();
-        t.model.shares();
         t.model.user();
+        t.list.field('shares', {
+          type: 'ShareQuote',
+          resolve: async (
+            parent,
+            _,
+            { prisma, dataSources: { iexCloudAPI } }
+          ) => {
+            const data = await prisma.watchlist.findUnique({
+              where: { id: parent.id },
+              include: { shares: { include: { share: true } } },
+            });
+            const symbols = data?.shares.map(d => d.share.symbol) || [];
+            const cached = (
+              await mhgetall(symbols.map(s => `${s}:quote`))
+            ).filter(sh => sh.symbol);
+            const cachedKeys = cached.map(c => c.symbol);
+            const diffKeys = diff(symbols, cachedKeys).removed;
+            let freshData: Record<string, { quote: {} }> | null = null;
+
+            if (diffKeys.length) {
+              freshData = await iexCloudAPI.batch(diffKeys, ['quote']);
+              freshData &&
+                (await mhmset(
+                  Object.entries(freshData).map(entry => [
+                    `${entry[0]}:quote`,
+                    entry[1].quote,
+                  ]),
+                  60 * 15
+                ));
+            }
+
+            return [
+              ...cached,
+              ...(freshData ? Object.values(freshData).map(d => d.quote) : []),
+            ];
+          },
+        });
       },
     }),
     objectType({
       name: 'Share',
       definition(t) {
         t.model.id();
-        t.model.name();
-        t.model.type();
+        t.model.companyName();
         t.model.symbol();
-        t.model.currency();
-        t.model.region();
-        t.model.marketOpen();
-        t.model.marketClose();
+        t.model.issueType();
+        t.model.description();
+        t.model.exchange();
+        t.model.sector();
+        t.model.industry();
+        t.model.country();
+      },
+    }),
+    objectType({
+      name: 'WatchlistShares',
+      definition(t) {
+        t.model.price();
       },
     }),
     objectType({
@@ -78,6 +127,17 @@ export default makeSchema({
         t.string('marketClose');
         t.string('timezone');
         t.string('currency');
+      },
+    }),
+    objectType({
+      name: 'ShareQuote',
+      definition(t) {
+        t.string('symbol');
+        t.string('companyName');
+        t.float('latestPrice');
+        t.float('change');
+        t.float('changePercent');
+        t.float('volume');
       },
     }),
     queryType({
@@ -108,7 +168,6 @@ export default makeSchema({
           },
           async resolve(_, { symbol }, { dataSources: { alphaVantageAPI } }) {
             const data = await alphaVantageAPI.symbolSearch(symbol);
-
             return transformAlphaVantageSymbolSearchResponse(data);
           },
         });
@@ -128,37 +187,63 @@ export default makeSchema({
           },
         });
         t.nonNull.field('addShareToWatchlist', {
-          type: 'Share',
+          type: 'WatchlistShares',
           args: {
             symbol: nonNull(stringArg()),
-            name: nonNull(stringArg()),
-            type: nonNull(stringArg()),
-            region: nonNull(stringArg()),
-            currency: nonNull(stringArg()),
-            marketOpen: nonNull(stringArg()),
-            marketClose: nonNull(stringArg()),
-            timezone: nonNull(stringArg()),
             watchlistId: nonNull(idArg({ description: 'id of the watchlist' })),
           },
-          async resolve(_, { watchlistId, ...rest }, { prisma }) {
+          async resolve(
+            _,
+            { watchlistId, symbol },
+            { prisma, dataSources: { iexCloudAPI } }
+          ) {
+            let price;
+            let company;
+            let logo;
             let dbShare = await prisma.share.findUnique({
-              where: { symbol: rest.symbol },
+              where: { symbol },
             });
 
             if (!dbShare) {
-              dbShare = await prisma.share.create({ data: rest });
+              ({
+                [symbol]: { price, company, logo },
+              } = await iexCloudAPI.batch(
+                [symbol],
+                ['company', 'logo', 'price']
+              ));
+              dbShare = await prisma.share.create({
+                data: {
+                  symbol,
+                  ...(only(company, [
+                    'companyName',
+                    'issueType',
+                    'description',
+                    'exchange',
+                    'sector',
+                    'industry',
+                    'country',
+                    'website',
+                  ]) as any),
+                  logo: logo.url,
+                },
+              });
             }
 
-            return prisma.watchlist.update({
-              where: {
-                id: +watchlistId,
-              },
+            price = price || (await iexCloudAPI.price(symbol));
+
+            return prisma.watchlistShares.create({
               data: {
-                shares: {
+                watchlist: {
+                  connect: {
+                    id: +watchlistId,
+                  },
+                },
+                share: {
                   connect: {
                     id: dbShare.id,
                   },
                 },
+                price,
               },
             });
           },

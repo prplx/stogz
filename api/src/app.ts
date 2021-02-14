@@ -5,11 +5,14 @@ import cors from '@koa/cors';
 import schema from './schema';
 import { jwtAuth, saveUserToDB, obtainUserInfo } from './middlewares';
 import AlphaVantageAPI from './apollo/alphaVantageDataSource';
+import IExCloudAPI from './apollo/iexCloud';
+import _ from './services/redis';
 
 const app = new Koa();
 const apollo = new ApolloServer({
   dataSources: () => ({
     alphaVantageAPI: new AlphaVantageAPI(),
+    iexCloudAPI: new IExCloudAPI(),
   }),
   context: ({ ctx }) => ({ prisma, ctx }),
   schema,

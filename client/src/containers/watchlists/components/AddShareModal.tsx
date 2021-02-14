@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import {
   Modal,
   ModalOverlay,
@@ -9,14 +9,14 @@ import {
   ModalCloseButton,
   Button,
 } from '@chakra-ui/react';
-import Select from 'react-select';
-import { useDebouncedCallback } from 'use-debounce';
-import { useLazyQuery } from '@apollo/client';
-import searchSymbolQuery from '../../../queries/searchSymbol';
+import debounce from 'lodash.debounce';
+import Select from 'components/Select';
+import { useLazyQuery, useApolloClient } from '@apollo/client';
+import searchSymbolQuery from 'queries/searchSymbol';
 import {
   SearchSymbol,
   SearchSymbol_symbolSearch,
-} from '../../../queries/types/SearchSymbol';
+} from 'queries/types/SearchSymbol';
 
 type Props = {
   isOpen: boolean;
@@ -31,7 +31,9 @@ export default function AddWatchlistModal({
   isLoading,
   onAdd,
 }: Props) {
+  const client = useApolloClient();
   const [symbol, setSymbol] = useState('');
+  const [inputValue, setInputValue] = useState('');
   const [
     selectedSymbol,
     setSelectedSymbol,
@@ -40,18 +42,32 @@ export default function AddWatchlistModal({
     searchSymbol,
     { loading: loadingSearchSymbol, error: loadingSearchSymbolError, data },
   ] = useLazyQuery<SearchSymbol>(searchSymbolQuery, { variables: { symbol } });
-  const debouncedSearchSymbol = useDebouncedCallback(searchSymbol, 500);
-  const handleOnInputChange = (value: string) => {
-    if (!value) return;
-    setSymbol(value);
-    debouncedSearchSymbol.callback();
+  const debouncedSearchSymbol = useCallback(
+    debounce((value: string) => {
+      if (!value) return;
+      setSymbol(value);
+      searchSymbol();
+    }, 200),
+    []
+  );
+  const handleInputChange = (value: string) => {
+    setInputValue(value);
+    debouncedSearchSymbol(value);
   };
 
   return (
     <Modal
       colorScheme="blue"
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={() => {
+        setSelectedSymbol(null);
+        client.writeQuery({
+          query: searchSymbolQuery,
+          variables: { symbol },
+          data: { symbolSearch: null },
+        });
+        onClose();
+      }}
       blockScrollOnMount
       motionPreset="slideInBottom"
       closeOnOverlayClick={!isLoading}
@@ -63,17 +79,22 @@ export default function AddWatchlistModal({
         <ModalCloseButton />
         <ModalBody>
           <Select
-            options={data?.symbolSearch.map(s => ({
+            options={data?.symbolSearch?.map(s => ({
               ...s,
-              id: s.symbol,
+              value: s.symbol,
               label: `${s.symbol}: ${s.name}`,
             }))}
-            onInputChange={handleOnInputChange}
+            onInputChange={handleInputChange}
             isLoading={loadingSearchSymbol}
             error={loadingSearchSymbolError}
-            onChange={setSelectedSymbol}
+            onChange={({ value }) =>
+              setSelectedSymbol(
+                data?.symbolSearch?.find(({ symbol }) => symbol === value)
+              )
+            }
             autoFocus
             isDisabled={isLoading}
+            inputValue={inputValue}
           ></Select>
         </ModalBody>
         <ModalFooter>

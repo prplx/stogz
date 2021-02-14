@@ -4,7 +4,7 @@ import { prisma } from '../services/prisma';
 export default async function (ctx: Context, next: Next) {
   const authUser = ctx.state.user;
 
-  if (!authUser) return;
+  if (!authUser) return await next();
 
   const dbUser = await prisma.user.findUnique({
     where: { sub: authUser.sub },

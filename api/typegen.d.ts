@@ -4,6 +4,7 @@
  */
 
 import * as PrismaClient from "./../node_modules/.prisma/client/index"
+import { Context } from "./src/context"
 import { FieldAuthorizeResolver } from "nexus/dist/plugins/fieldAuthorizePlugin"
 
 
@@ -19,10 +20,6 @@ declare global {
 }
 
 export interface NexusGenInputs {
-  ShareWhereUniqueInput: { // input type
-    id?: number | null; // Int
-    symbol?: string | null; // String
-  }
   WatchlistWhereUniqueInput: { // input type
     id?: number | null; // Int
   }
@@ -53,8 +50,17 @@ export interface NexusGenObjects {
   Mutation: {};
   Query: {};
   Share: PrismaClient.Share;
+  ShareQuote: { // root type
+    change?: number | null; // Float
+    changePercent?: number | null; // Float
+    companyName?: string | null; // String
+    latestPrice?: number | null; // Float
+    symbol?: string | null; // String
+    volume?: number | null; // Float
+  }
   User: PrismaClient.User;
   Watchlist: PrismaClient.Watchlist;
+  WatchlistShares: PrismaClient.WatchlistShares;
 }
 
 export interface NexusGenInterfaces {
@@ -79,7 +85,7 @@ export interface NexusGenFieldTypes {
     type: string | null; // String
   }
   Mutation: { // field return type
-    addShareToWatchlist: NexusGenRootTypes['Share']; // Share!
+    addShareToWatchlist: NexusGenRootTypes['WatchlistShares']; // WatchlistShares!
     createWatchlist: NexusGenRootTypes['Watchlist']; // Watchlist!
   }
   Query: { // field return type
@@ -88,14 +94,23 @@ export interface NexusGenFieldTypes {
     watchlists: Array<NexusGenRootTypes['Watchlist'] | null> | null; // [Watchlist]
   }
   Share: { // field return type
-    currency: string; // String!
+    companyName: string; // String!
+    country: string | null; // String
+    description: string; // String!
+    exchange: string; // String!
     id: number; // Int!
-    marketClose: string; // String!
-    marketOpen: string; // String!
-    name: string; // String!
-    region: string; // String!
+    industry: string; // String!
+    issueType: string; // String!
+    sector: string; // String!
     symbol: string; // String!
-    type: string; // String!
+  }
+  ShareQuote: { // field return type
+    change: number | null; // Float
+    changePercent: number | null; // Float
+    companyName: string | null; // String
+    latestPrice: number | null; // Float
+    symbol: string | null; // String
+    volume: number | null; // Float
   }
   User: { // field return type
     email: string | null; // String
@@ -109,8 +124,11 @@ export interface NexusGenFieldTypes {
   Watchlist: { // field return type
     id: number; // Int!
     name: string; // String!
-    shares: NexusGenRootTypes['Share'][]; // [Share!]!
+    shares: Array<NexusGenRootTypes['ShareQuote'] | null> | null; // [ShareQuote]
     user: NexusGenRootTypes['User']; // User!
+  }
+  WatchlistShares: { // field return type
+    price: number; // Float!
   }
 }
 
@@ -126,7 +144,7 @@ export interface NexusGenFieldTypeNames {
     type: 'String'
   }
   Mutation: { // field return type name
-    addShareToWatchlist: 'Share'
+    addShareToWatchlist: 'WatchlistShares'
     createWatchlist: 'Watchlist'
   }
   Query: { // field return type name
@@ -135,14 +153,23 @@ export interface NexusGenFieldTypeNames {
     watchlists: 'Watchlist'
   }
   Share: { // field return type name
-    currency: 'String'
+    companyName: 'String'
+    country: 'String'
+    description: 'String'
+    exchange: 'String'
     id: 'Int'
-    marketClose: 'String'
-    marketOpen: 'String'
-    name: 'String'
-    region: 'String'
+    industry: 'String'
+    issueType: 'String'
+    sector: 'String'
     symbol: 'String'
-    type: 'String'
+  }
+  ShareQuote: { // field return type name
+    change: 'Float'
+    changePercent: 'Float'
+    companyName: 'String'
+    latestPrice: 'Float'
+    symbol: 'String'
+    volume: 'Float'
   }
   User: { // field return type name
     email: 'String'
@@ -156,22 +183,18 @@ export interface NexusGenFieldTypeNames {
   Watchlist: { // field return type name
     id: 'Int'
     name: 'String'
-    shares: 'Share'
+    shares: 'ShareQuote'
     user: 'User'
+  }
+  WatchlistShares: { // field return type name
+    price: 'Float'
   }
 }
 
 export interface NexusGenArgTypes {
   Mutation: {
     addShareToWatchlist: { // args
-      currency: string; // String!
-      marketClose: string; // String!
-      marketOpen: string; // String!
-      name: string; // String!
-      region: string; // String!
       symbol: string; // String!
-      timezone: string; // String!
-      type: string; // String!
       watchlistId: string; // ID!
     }
     createWatchlist: { // args
@@ -190,14 +213,6 @@ export interface NexusGenArgTypes {
     watchlists: { // args
       after?: NexusGenInputs['WatchlistWhereUniqueInput'] | null; // WatchlistWhereUniqueInput
       before?: NexusGenInputs['WatchlistWhereUniqueInput'] | null; // WatchlistWhereUniqueInput
-      first?: number | null; // Int
-      last?: number | null; // Int
-    }
-  }
-  Watchlist: {
-    shares: { // args
-      after?: NexusGenInputs['ShareWhereUniqueInput'] | null; // ShareWhereUniqueInput
-      before?: NexusGenInputs['ShareWhereUniqueInput'] | null; // ShareWhereUniqueInput
       first?: number | null; // Int
       last?: number | null; // Int
     }
@@ -235,7 +250,7 @@ export type NexusGenFeaturesConfig = {
 }
 
 export interface NexusGenTypes {
-  context: any;
+  context: Context;
   inputTypes: NexusGenInputs;
   rootTypes: NexusGenRootTypes;
   inputTypeShapes: NexusGenInputs & NexusGenEnums & NexusGenScalars;

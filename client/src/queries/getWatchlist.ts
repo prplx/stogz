@@ -6,12 +6,12 @@ export default gql`
       id
       name
       shares {
-        id
         symbol
-        name
-        type
-        currency
-        region
+        companyName
+        latestPrice
+        change
+        changePercent
+        volume
       }
     }
   }

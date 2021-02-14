@@ -8,8 +8,8 @@
 // ====================================================
 
 export interface AddShareToWatchlist_addShareToWatchlist {
-  __typename: "Share";
-  id: number;
+  __typename: "WatchlistShares";
+  price: number;
 }
 
 export interface AddShareToWatchlist {
@@ -18,12 +18,5 @@ export interface AddShareToWatchlist {
 
 export interface AddShareToWatchlistVariables {
   symbol: string;
-  name: string;
-  type: string;
-  region: string;
-  currency: string;
-  marketOpen: string;
-  marketClose: string;
-  timezone: string;
   watchlistId: string;
 }

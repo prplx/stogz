@@ -16,6 +16,8 @@ import {
   AlertIcon,
   AlertTitle,
   AlertDescription,
+  Skeleton,
+  Stack,
 } from '@chakra-ui/react';
 import { useQuery, useLazyQuery, useMutation } from '@apollo/client';
 import Layout from '../../components/Layout';
@@ -162,6 +164,18 @@ export default function WatchlistsContainer() {
                     <Heading size="md" color="gray.500" mt={8} align="center">
                       There are no any shares in the watchlist yet.
                     </Heading>
+                  )}
+                  {loadingWatchlist && (
+                    <Stack mt={8}>
+                      {[1, 2, 3, 4, 5].map(i => (
+                        <Skeleton
+                          h="12"
+                          key={i}
+                          endColor="gray.700"
+                          startColor="gray.600"
+                        />
+                      ))}
+                    </Stack>
                   )}
                   {Boolean(watchlistData?.watchlist.shares.length) && (
                     <Box mt={8}>

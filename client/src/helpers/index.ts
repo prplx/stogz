@@ -19,15 +19,13 @@ export const redirect = (
 export const protect = async (
   ctx: NextPageContext | GetServerSidePropsContext
 ) => {
-  if (typeof window === 'undefined') {
-    const session = await auth0.getSession(ctx.req!);
-    if (!session || !session.user) {
-      ctx.res!.writeHead(302, {
-        Location: '/api/login',
-      });
-      ctx.res!.end();
-      return;
-    }
-    return session.user;
+  const session = await auth0?.getSession(ctx.req!);
+  if (!session || !session.user) {
+    ctx.res!.writeHead(302, {
+      Location: '/api/login',
+    });
+    ctx.res!.end();
+    return;
   }
+  return session.user;
 };

@@ -1,17 +1,24 @@
-import { RESTDataSource } from 'apollo-datasource-rest';
+import { RESTDataSource, RequestOptions } from 'apollo-datasource-rest';
 import { getStringEnv } from 'env-guard';
 
 export default class AlphaVantageDataSource extends RESTDataSource {
+  private apiKey: string;
+
   constructor() {
     super();
-    this.baseURL = 'https://www.alphavantage.co';
+    this.apiKey = getStringEnv('ALPHA_VANTAGE_API_KEY');
+    this.baseURL = getStringEnv('ALPHA_VANTAGE_URL');
+  }
+
+  willSendRequest(request: RequestOptions) {
+    request.params.set('apikey', this.apiKey);
   }
 
   async symbolSearch(symbol: string) {
-    return this.get(
-      `/query?function=SYMBOL_SEARCH&keywords=${symbol}&apikey=${getStringEnv(
-        'ALPHA_VANTAGE_API_KEY'
-      )}`
-    );
+    return this.get(`/query?function=SYMBOL_SEARCH&keywords=${symbol}`);
+  }
+
+  async companyOverview(symbol: string) {
+    return this.get(`/query?function=OVERVIEW&symbol=${symbol}`);
   }
 }

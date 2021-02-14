@@ -6,7 +6,7 @@
     "build": "next build",
     "start": "next start",
     "type-check": "tsc",
-    "generateTypes": "apollo-codegen introspect-schema http://localhost:3030/graphql --output schema.json && apollo codegen:generate --localSchemaFile=schema.json --target=typescript --includes=src/**/*.ts --tagName=gql --addTypename --globalTypesFile=src/types/graphql-global-types.ts types"
+    "generateTypes": "apollo-codegen introspect-schema http://localhost:3030/graphql --output schema.json --header \"Authorization: Bearer $(grep SERVICE_TOKEN .env | cut -d '=' -f2)\" && apollo codegen:generate --localSchemaFile=schema.json --target=typescript --includes=src/**/*.ts --tagName=gql --addTypename --globalTypesFile=src/types/graphql-global-types.ts types"
   },
   "dependencies": {
     "@apollo/client": "^3.3.7",
@@ -19,15 +19,18 @@
     "env-guard": "^1.0.3",
     "framer-motion": "^3.2.1",
     "graphql": "^15.5.0",
+    "lodash.debounce": "^4.0.8",
     "next": "latest",
     "next-with-apollo": "^5.1.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-icons": "latest",
     "react-select": "^4.0.2",
+    "react-tradingview-widget": "^1.3.2",
     "use-debounce": "^5.2.0"
   },
   "devDependencies": {
+    "@types/lodash.debounce": "^4.0.6",
     "@types/node": "^12.12.21",
     "@types/react": "^16.9.16",
     "@types/react-dom": "^16.9.4",

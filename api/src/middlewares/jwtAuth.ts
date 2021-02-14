@@ -1,6 +1,7 @@
 import jwt from 'koa-jwt';
 import { koaJwtSecret } from 'jwks-rsa';
 import config from '../config';
+import { getStringEnv } from 'env-guard';
 
 export default jwt({
   secret: koaJwtSecret({
@@ -13,4 +14,9 @@ export default jwt({
   audience: config.auth0Audience,
   issuer: config.auth0Issuer,
   algorithms: ['RS256'],
-}).unless({ path: [/^\/$/] });
+}).unless({
+  path: [/^\/$/],
+  custom: ctx =>
+    ctx.request.headers['authorization'] ===
+    `Bearer ${getStringEnv('SERVICE_TOKEN')}`,
+});

@@ -23,30 +23,44 @@ model User {
 }
 
 model Share {
-  id          Int         @id @default(autoincrement())
-  createAt    DateTime    @default(now())
-  name        String
-  symbol      String      @unique
-  type        String
-  region      String
-  currency    String
-  marketOpen  String
-  marketClose String
-  timezone    String
-  watchlists  Watchlist[]
+  id          Int               @id @default(autoincrement())
+  symbol      String            @unique
+  companyName String
+  exchange    String
+  industry    String
+  description String
+  issueType   String
+  sector      String
+  country     String?
+  website     String?
+  logo        String?
+  createAt    DateTime          @default(now())
+  watchlists  WatchlistShares[]
 
-  @@index([name])
+  @@index([companyName])
   @@index([symbol])
   @@map("shares")
 }
 
 model Watchlist {
-  id       Int      @id @default(autoincrement())
-  createAt DateTime @default(now())
+  id       Int               @id @default(autoincrement())
+  createAt DateTime          @default(now())
   name     String
-  user     User     @relation(fields: [userId], references: [id])
+  user     User              @relation(fields: [userId], references: [id])
   userId   Int
-  shares   Share[]
+  shares   WatchlistShares[]
 
   @@map("watchlists")
+}
+
+model WatchlistShares {
+  share       Share     @relation(fields: [shareId], references: [id])
+  shareId     Int
+  watchlist   Watchlist @relation(fields: [watchlistId], references: [id])
+  watchlistId Int
+  createdAt   DateTime  @default(now())
+  price       Float
+
+  @@id([shareId, watchlistId])
+  @@map("watchlists_shares")
 }

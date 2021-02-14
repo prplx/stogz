@@ -8,20 +8,20 @@
 // ====================================================
 
 export interface GetWatchList_watchlist_shares {
-  __typename: "Share";
-  id: number;
-  symbol: string;
-  name: string;
-  type: string;
-  currency: string;
-  region: string;
+  __typename: "ShareQuote";
+  symbol: string | null;
+  companyName: string | null;
+  latestPrice: number | null;
+  change: number | null;
+  changePercent: number | null;
+  volume: number | null;
 }
 
 export interface GetWatchList_watchlist {
   __typename: "Watchlist";
   id: number;
   name: string;
-  shares: GetWatchList_watchlist_shares[];
+  shares: (GetWatchList_watchlist_shares | null)[] | null;
 }
 
 export interface GetWatchList {

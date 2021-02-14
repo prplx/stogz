@@ -15,18 +15,11 @@ type AlphaVantageSymbol {
 
 type Mutation {
   addShareToWatchlist(
-    currency: String!
-    marketClose: String!
-    marketOpen: String!
-    name: String!
-    region: String!
     symbol: String!
-    timezone: String!
-    type: String!
 
     """id of the watchlist"""
     watchlistId: ID!
-  ): Share!
+  ): WatchlistShares!
   createWatchlist(
     """title of the watchlist"""
     name: String!
@@ -46,19 +39,24 @@ type Query {
 }
 
 type Share {
-  currency: String!
+  companyName: String!
+  country: String
+  description: String!
+  exchange: String!
   id: Int!
-  marketClose: String!
-  marketOpen: String!
-  name: String!
-  region: String!
+  industry: String!
+  issueType: String!
+  sector: String!
   symbol: String!
-  type: String!
 }
 
-input ShareWhereUniqueInput {
-  id: Int
+type ShareQuote {
+  change: Float
+  changePercent: Float
+  companyName: String
+  latestPrice: Float
   symbol: String
+  volume: Float
 }
 
 type User {
@@ -74,8 +72,12 @@ type User {
 type Watchlist {
   id: Int!
   name: String!
-  shares(after: ShareWhereUniqueInput, before: ShareWhereUniqueInput, first: Int, last: Int): [Share!]!
+  shares: [ShareQuote]
   user: User!
+}
+
+type WatchlistShares {
+  price: Float!
 }
 
 input WatchlistWhereUniqueInput {
