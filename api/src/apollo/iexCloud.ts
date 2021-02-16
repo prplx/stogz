@@ -19,7 +19,7 @@ export default class IExCloud extends RESTDataSource {
   }
 
   async quote(symbol: string) {
-    return this.get(`/stock/${symbol}/quote`);
+    return this.get(`/stock/${symbol}/quote?displayPercent=true`);
   }
 
   async price(symbol: string) {
@@ -37,7 +37,7 @@ export default class IExCloud extends RESTDataSource {
     return this.get(
       `/stock/market/batch?symbols=${symbols.join(',')}&types=${types.join(
         ','
-      )}`
+      )}&displayPercent=true`
     );
   }
 }

@@ -1,11 +1,10 @@
 import { NextApiHandler } from 'next';
 import axios, { AxiosRequestConfig } from 'axios';
-import auth0 from '../../utils/auth0';
+import { getAccessToken } from '@auth0/nextjs-auth0';
 
 const handler: NextApiHandler = async (req, res) => {
   try {
-    const tokenCache = auth0.tokenCache(req, res);
-    const { accessToken } = await tokenCache.getAccessToken();
+    const accessToken = (await getAccessToken(req, res)).accessToken;
     const { method, body } = req;
 
     if (!accessToken) res.status(401).end();

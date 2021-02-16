@@ -1,7 +1,17 @@
 import React, { ReactNode } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
-import { Flex, Heading, Divider, Box } from '@chakra-ui/react';
+import {
+  Flex,
+  Heading,
+  Divider,
+  Box,
+  Avatar,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+} from '@chakra-ui/react';
 import { IconButton } from '@chakra-ui/react';
 import { FaBriefcase, FaUser, FaBinoculars } from 'react-icons/fa';
 import { FiLogOut } from 'react-icons/fi';
@@ -9,11 +19,15 @@ import { FiLogOut } from 'react-icons/fi';
 type Props = {
   children?: ReactNode;
   title?: string;
+  user?: any;
 };
 
-const Layout = ({ children, title = 'This is the default title' }: Props) => {
+const Layout = ({
+  children,
+  title = 'This is the default title',
+  user,
+}: Props) => {
   const { pathname, push } = useRouter();
-  // const { logout } = useAuth0();
 
   return (
     <>
@@ -52,23 +66,22 @@ const Layout = ({ children, title = 'This is the default title' }: Props) => {
             />
           </Box>
           <Box align="center">
-            <IconButton
-              icon={<FaUser />}
-              aria-label="Profile"
-              colorScheme="blue"
-              variant="outline"
-              onClick={() => push('/profile')}
-            />
-            <IconButton
-              icon={<FiLogOut />}
-              aria-label="Log out"
-              colorScheme="blue"
-              variant="outline"
-              isActive={pathname === '/profile'}
-              mt={4}
-              as="a"
-              href="/api/logout"
-            />
+            <Menu>
+              <MenuButton>
+                <Avatar w={10} h={10} name={user.name} src={user.picture} />
+              </MenuButton>
+              <MenuList>
+                <MenuItem icon={<FaUser />} onClick={() => push('/profile')}>
+                  Profile
+                </MenuItem>
+                <MenuItem
+                  icon={<FiLogOut />}
+                  onClick={() => push('/api/logout')}
+                >
+                  Log out
+                </MenuItem>
+              </MenuList>
+            </Menu>
           </Box>
         </Flex>
         <Flex as="main" flex={1} direction="column">

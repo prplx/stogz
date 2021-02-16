@@ -14,7 +14,13 @@ export interface GetWatchList_watchlist_shares {
   latestPrice: number | null;
   change: number | null;
   changePercent: number | null;
-  volume: number | null;
+  latestVolume: string | null;
+  latestUpdate: number | null;
+  addedAt: any | null;
+  addedPrice: number | null;
+  open: string | null;
+  low: string | null;
+  high: string | null;
 }
 
 export interface GetWatchList_watchlist {

@@ -8,11 +8,15 @@ import {
   stringArg,
   fieldAuthorizePlugin,
   mutationType,
+  asNexusMethod,
 } from 'nexus';
 import { nexusPrisma } from 'nexus-plugin-prisma';
 import { transformAlphaVantageSymbolSearchResponse, only } from './helpers';
 import { mhgetall, mhmset } from './services/redis';
 import { diff } from 'fast-array-diff';
+import { GraphQLDateTime } from 'graphql-iso-date';
+
+const GQLDate = asNexusMethod(GraphQLDateTime, 'dateTime');
 
 export default makeSchema({
   shouldGenerateArtifacts: true,
@@ -39,6 +43,7 @@ export default makeSchema({
     fieldAuthorizePlugin(),
   ],
   types: [
+    GQLDate,
     objectType({
       name: 'User',
       definition(t) {
@@ -69,6 +74,18 @@ export default makeSchema({
               include: { shares: { include: { share: true } } },
             });
             const symbols = data?.shares.map(d => d.share.symbol) || [];
+            const normalizedData: {
+              [key: string]: { addetAt: number; addedPrice: number };
+            } =
+              data?.shares.reduce((acc, curr) => {
+                return {
+                  ...acc,
+                  [curr.share.symbol]: {
+                    addedAt: curr.createdAt,
+                    addedPrice: curr.price,
+                  },
+                };
+              }, {}) || {};
             const cached = (
               await mhgetall(symbols.map(s => `${s}:quote`))
             ).filter(sh => sh.symbol);
@@ -91,7 +108,17 @@ export default makeSchema({
             return [
               ...cached,
               ...(freshData ? Object.values(freshData).map(d => d.quote) : []),
-            ];
+            ].map(share => {
+              const normalized = normalizedData[share.symbol];
+              return {
+                ...share,
+                ...normalized,
+                changeSinceAdded: +share.latestPrice - normalized.addedPrice,
+                changePercentSinceAdded:
+                  (100 * (+share.latestPrice - normalized.addedPrice)) /
+                  ((+share.latestPrice + normalized.addedPrice) / 2),
+              };
+            });
           },
         });
       },
@@ -137,7 +164,16 @@ export default makeSchema({
         t.float('latestPrice');
         t.float('change');
         t.float('changePercent');
-        t.float('volume');
+        t.string('latestVolume');
+        t.string('open');
+        t.string('low');
+        t.string('high');
+        t.float('addedPrice');
+        t.float('latestUpdate');
+        // @ts-ignore because Nexus is a crap
+        t.dateTime('addedAt');
+        t.float('changeSinceAdded');
+        t.float('changePercentSinceAdded');
       },
     }),
     queryType({

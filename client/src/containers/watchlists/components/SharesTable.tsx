@@ -1,5 +1,6 @@
 import NextLink from 'next/link';
-import { Table, Thead, Tbody, Tr, Th, Td, Link, Badge } from '@chakra-ui/react';
+import { Table, Thead, Tbody, Tr, Th, Td, Link, Tag } from '@chakra-ui/react';
+import { format } from 'date-fns';
 import { GetWatchList_watchlist } from 'queries/types/GetWatchList';
 
 type Props = {
@@ -13,10 +14,14 @@ export default function SharesTable({ shares }: Props) {
         <Tr>
           <Th pl={0}>Symbol</Th>
           <Th pl={0}>Name</Th>
-          <Th pl={0}>Price</Th>
+          <Th pl={0}>Latest</Th>
+          <Th pl={0}>Open</Th>
+          <Th pl={0}>High</Th>
+          <Th pl={0}>Low</Th>
           <Th pl={0}>Change</Th>
-          <Th pl={0}>Change %</Th>
+          <Th pl={0}>% Change</Th>
           <Th pl={0}>Volume</Th>
+          <Th pl={0}>Updated</Th>
         </Tr>
       </Thead>
       <Tbody>
@@ -33,19 +38,33 @@ export default function SharesTable({ shares }: Props) {
                 <Link color="blue.400">{s.companyName}</Link>
               </NextLink>
             </Td>
-            <Td pl={0}>{s.latestPrice}</Td>
+            <Td pl={0}>{s.latestPrice.toFixed(2)}</Td>
+            <Td pl={0}>{s.open}</Td>
+            <Td pl={0}>{s.high}</Td>
+            <Td pl={0}>{s.low}</Td>
             <Td pl={0}>
-              <Badge colorScheme={s.change < 0 ? 'red' : 'green'}>
+              <Tag
+                size="md"
+                colorScheme={s.change < 0 ? 'red' : 'green'}
+                fontSize="1rem"
+              >
+                {s.change > 0 && '+'}
                 {s.change}
-              </Badge>
+              </Tag>
             </Td>
             <Td pl={0}>
-              <Badge colorScheme={s.change < 0 ? 'red' : 'green'}>
-                {s.changePercent * 100}
-              </Badge>
+              <Tag
+                size="md"
+                colorScheme={s.changePercent < 0 ? 'red' : 'green'}
+                fontSize="1rem"
+              >
+                {s.changePercent > 0 && '+'}
+                {s.changePercent.toFixed(2)}
+              </Tag>
             </Td>
 
-            <Td pl={0}>{s.volume}</Td>
+            <Td pl={0}>{s.latestVolume}</Td>
+            <Td pl={0}>{format(s.latestUpdate, 'H:mm:ss')}</Td>
           </Tr>
         ))}
       </Tbody>

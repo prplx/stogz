@@ -11,7 +11,15 @@ export default gql`
         latestPrice
         change
         changePercent
-        volume
+        latestVolume
+        latestUpdate
+        addedAt
+        addedPrice
+        open
+        low
+        high
+        changeSinceAdded
+        changePercentSinceAdded
       }
     }
   }

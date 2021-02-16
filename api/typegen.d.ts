@@ -6,8 +6,23 @@
 import * as PrismaClient from "./../node_modules/.prisma/client/index"
 import { Context } from "./src/context"
 import { FieldAuthorizeResolver } from "nexus/dist/plugins/fieldAuthorizePlugin"
-
-
+import { core } from "nexus"
+declare global {
+  interface NexusGenCustomInputMethods<TypeName extends string> {
+    /**
+     * A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+     */
+    dateTime<FieldName extends string>(fieldName: FieldName, opts?: core.CommonInputFieldConfig<TypeName, FieldName>): void // "DateTime";
+  }
+}
+declare global {
+  interface NexusGenCustomOutputMethods<TypeName extends string> {
+    /**
+     * A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+     */
+    dateTime<FieldName extends string>(fieldName: FieldName, ...opts: core.ScalarOutSpread<TypeName, FieldName>): void // "DateTime";
+  }
+}
 declare global {
   interface NexusGenCustomOutputProperties<TypeName extends string> {
     model: NexusPrisma<TypeName, 'model'>
@@ -34,6 +49,7 @@ export interface NexusGenScalars {
   Float: number
   Boolean: boolean
   ID: string
+  DateTime: any
 }
 
 export interface NexusGenObjects {
@@ -51,12 +67,20 @@ export interface NexusGenObjects {
   Query: {};
   Share: PrismaClient.Share;
   ShareQuote: { // root type
+    addedAt?: NexusGenScalars['DateTime'] | null; // DateTime
+    addedPrice?: number | null; // Float
     change?: number | null; // Float
     changePercent?: number | null; // Float
+    changePercentSinceAdded?: number | null; // Float
+    changeSinceAdded?: number | null; // Float
     companyName?: string | null; // String
+    high?: string | null; // String
     latestPrice?: number | null; // Float
+    latestUpdate?: number | null; // Float
+    latestVolume?: string | null; // String
+    low?: string | null; // String
+    open?: string | null; // String
     symbol?: string | null; // String
-    volume?: number | null; // Float
   }
   User: PrismaClient.User;
   Watchlist: PrismaClient.Watchlist;
@@ -105,12 +129,20 @@ export interface NexusGenFieldTypes {
     symbol: string; // String!
   }
   ShareQuote: { // field return type
+    addedAt: NexusGenScalars['DateTime'] | null; // DateTime
+    addedPrice: number | null; // Float
     change: number | null; // Float
     changePercent: number | null; // Float
+    changePercentSinceAdded: number | null; // Float
+    changeSinceAdded: number | null; // Float
     companyName: string | null; // String
+    high: string | null; // String
     latestPrice: number | null; // Float
+    latestUpdate: number | null; // Float
+    latestVolume: string | null; // String
+    low: string | null; // String
+    open: string | null; // String
     symbol: string | null; // String
-    volume: number | null; // Float
   }
   User: { // field return type
     email: string | null; // String
@@ -164,12 +196,20 @@ export interface NexusGenFieldTypeNames {
     symbol: 'String'
   }
   ShareQuote: { // field return type name
+    addedAt: 'DateTime'
+    addedPrice: 'Float'
     change: 'Float'
     changePercent: 'Float'
+    changePercentSinceAdded: 'Float'
+    changeSinceAdded: 'Float'
     companyName: 'String'
+    high: 'String'
     latestPrice: 'Float'
+    latestUpdate: 'Float'
+    latestVolume: 'String'
+    low: 'String'
+    open: 'String'
     symbol: 'String'
-    volume: 'Float'
   }
   User: { // field return type name
     email: 'String'

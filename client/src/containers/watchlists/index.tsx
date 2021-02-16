@@ -20,7 +20,6 @@ import {
   Stack,
 } from '@chakra-ui/react';
 import { useQuery, useLazyQuery, useMutation } from '@apollo/client';
-import Layout from '../../components/Layout';
 import fetchWatchlistsQuery from '../../queries/fetchWatchlists';
 import getWatchlistQuery from '../../queries/getWatchlist';
 import { FetchWatchlists } from '../../queries/types/FetchWatchlists';
@@ -96,7 +95,7 @@ export default function WatchlistsContainer() {
   }, [watchlists?.length]);
 
   return (
-    <Layout title="Watchlists">
+    <>
       {(errorWatchlist || errorWatchlists || errorCreateWatchlist) && (
         <Alert status="error">
           <AlertIcon />
@@ -169,7 +168,7 @@ export default function WatchlistsContainer() {
                     <Stack mt={8}>
                       {[1, 2, 3, 4, 5].map(i => (
                         <Skeleton
-                          h="12"
+                          h="10"
                           key={i}
                           endColor="gray.700"
                           startColor="gray.600"
@@ -206,6 +205,6 @@ export default function WatchlistsContainer() {
           })
         }
       />
-    </Layout>
+    </>
   );
 }
