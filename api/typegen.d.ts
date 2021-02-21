@@ -74,12 +74,12 @@ export interface NexusGenObjects {
     changePercentSinceAdded?: number | null; // Float
     changeSinceAdded?: number | null; // Float
     companyName?: string | null; // String
-    high?: string | null; // String
+    high?: number | null; // Float
     latestPrice?: number | null; // Float
     latestUpdate?: number | null; // Float
-    latestVolume?: string | null; // String
-    low?: string | null; // String
-    open?: string | null; // String
+    latestVolume?: number | null; // Float
+    low?: number | null; // Float
+    open?: number | null; // Float
     symbol?: string | null; // String
   }
   User: PrismaClient.User;
@@ -136,12 +136,12 @@ export interface NexusGenFieldTypes {
     changePercentSinceAdded: number | null; // Float
     changeSinceAdded: number | null; // Float
     companyName: string | null; // String
-    high: string | null; // String
+    high: number | null; // Float
     latestPrice: number | null; // Float
     latestUpdate: number | null; // Float
-    latestVolume: string | null; // String
-    low: string | null; // String
-    open: string | null; // String
+    latestVolume: number | null; // Float
+    low: number | null; // Float
+    open: number | null; // Float
     symbol: string | null; // String
   }
   User: { // field return type
@@ -203,12 +203,12 @@ export interface NexusGenFieldTypeNames {
     changePercentSinceAdded: 'Float'
     changeSinceAdded: 'Float'
     companyName: 'String'
-    high: 'String'
+    high: 'Float'
     latestPrice: 'Float'
     latestUpdate: 'Float'
-    latestVolume: 'String'
-    low: 'String'
-    open: 'String'
+    latestVolume: 'Float'
+    low: 'Float'
+    open: 'Float'
     symbol: 'String'
   }
   User: { // field return type name

@@ -36,6 +36,7 @@ export default function AddWatchlistModal({
       motionPreset="slideInBottom"
       closeOnOverlayClick={!isLoading}
       closeOnEsc={!isLoading}
+      isCentered
     >
       <ModalOverlay />
       <ModalContent>

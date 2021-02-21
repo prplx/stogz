@@ -21,6 +21,8 @@ export interface GetWatchList_watchlist_shares {
   open: string | null;
   low: string | null;
   high: string | null;
+  changeSinceAdded: number | null;
+  changePercentSinceAdded: number | null;
 }
 
 export interface GetWatchList_watchlist {

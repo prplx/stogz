@@ -8,10 +8,7 @@
     "strict": true,
     "noImplicitAny": true,
     "moduleResolution": "node",
-    "baseUrl": ".",
-    "paths": {
-      "*": ["*"]
-    },
+    "baseUrl": "./src",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
@@ -19,5 +16,6 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["./typegen.d.ts", "src/**/*.ts"]
+  "include": ["./typegen.d.ts", "src/**/*.ts"],
+  "exclude": ["node_modules"]
 }

@@ -63,12 +63,12 @@ type ShareQuote {
   changePercentSinceAdded: Float
   changeSinceAdded: Float
   companyName: String
-  high: String
+  high: Float
   latestPrice: Float
   latestUpdate: Float
-  latestVolume: String
-  low: String
-  open: String
+  latestVolume: Float
+  low: Float
+  open: Float
   symbol: String
 }
 

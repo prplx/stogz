@@ -141,9 +141,7 @@ export default function WatchlistsContainer() {
                 <TabPanel key={w.id} p={0}>
                   <Flex justify="space-between">
                     <Box>
-                      <Heading size="md">
-                        {watchlistData?.watchlist.name}
-                      </Heading>
+                      <Heading size="md">{watchlists[tabIndex].name}</Heading>
                       <Text color="gray.500" mt={2}>
                         Items: {watchlistData?.watchlist.shares.length}
                       </Text>

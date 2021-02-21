@@ -76,7 +76,7 @@ const Layout = ({
                 </MenuItem>
                 <MenuItem
                   icon={<FiLogOut />}
-                  onClick={() => push('/api/logout')}
+                  onClick={() => push('/api/auth/logout')}
                 >
                   Log out
                 </MenuItem>

@@ -12,9 +12,9 @@ import {
 } from 'nexus';
 import { nexusPrisma } from 'nexus-plugin-prisma';
 import { transformAlphaVantageSymbolSearchResponse, only } from './helpers';
-import { mhgetall, mhmset } from './services/redis';
-import { diff } from 'fast-array-diff';
 import { GraphQLDateTime } from 'graphql-iso-date';
+import watchlistSharesResolver from './resolvers/watchlistShares';
+import addShareToWatchlistResolver from './resolvers/addShareToWatchlist';
 
 const GQLDate = asNexusMethod(GraphQLDateTime, 'dateTime');
 
@@ -64,62 +64,7 @@ export default makeSchema({
         t.model.user();
         t.list.field('shares', {
           type: 'ShareQuote',
-          resolve: async (
-            parent,
-            _,
-            { prisma, dataSources: { iexCloudAPI } }
-          ) => {
-            const data = await prisma.watchlist.findUnique({
-              where: { id: parent.id },
-              include: { shares: { include: { share: true } } },
-            });
-            const symbols = data?.shares.map(d => d.share.symbol) || [];
-            const normalizedData: {
-              [key: string]: { addetAt: number; addedPrice: number };
-            } =
-              data?.shares.reduce((acc, curr) => {
-                return {
-                  ...acc,
-                  [curr.share.symbol]: {
-                    addedAt: curr.createdAt,
-                    addedPrice: curr.price,
-                  },
-                };
-              }, {}) || {};
-            const cached = (
-              await mhgetall(symbols.map(s => `${s}:quote`))
-            ).filter(sh => sh.symbol);
-            const cachedKeys = cached.map(c => c.symbol);
-            const diffKeys = diff(symbols, cachedKeys).removed;
-            let freshData: Record<string, { quote: {} }> | null = null;
-
-            if (diffKeys.length) {
-              freshData = await iexCloudAPI.batch(diffKeys, ['quote']);
-              freshData &&
-                (await mhmset(
-                  Object.entries(freshData).map(entry => [
-                    `${entry[0]}:quote`,
-                    entry[1].quote,
-                  ]),
-                  60 * 15
-                ));
-            }
-
-            return [
-              ...cached,
-              ...(freshData ? Object.values(freshData).map(d => d.quote) : []),
-            ].map(share => {
-              const normalized = normalizedData[share.symbol];
-              return {
-                ...share,
-                ...normalized,
-                changeSinceAdded: +share.latestPrice - normalized.addedPrice,
-                changePercentSinceAdded:
-                  (100 * (+share.latestPrice - normalized.addedPrice)) /
-                  ((+share.latestPrice + normalized.addedPrice) / 2),
-              };
-            });
-          },
+          resolve: watchlistSharesResolver,
         });
       },
     }),
@@ -164,10 +109,10 @@ export default makeSchema({
         t.float('latestPrice');
         t.float('change');
         t.float('changePercent');
-        t.string('latestVolume');
-        t.string('open');
-        t.string('low');
-        t.string('high');
+        t.float('latestVolume');
+        t.float('open');
+        t.float('low');
+        t.float('high');
         t.float('addedPrice');
         t.float('latestUpdate');
         // @ts-ignore because Nexus is a crap
@@ -228,61 +173,7 @@ export default makeSchema({
             symbol: nonNull(stringArg()),
             watchlistId: nonNull(idArg({ description: 'id of the watchlist' })),
           },
-          async resolve(
-            _,
-            { watchlistId, symbol },
-            { prisma, dataSources: { iexCloudAPI } }
-          ) {
-            let price;
-            let company;
-            let logo;
-            let dbShare = await prisma.share.findUnique({
-              where: { symbol },
-            });
-
-            if (!dbShare) {
-              ({
-                [symbol]: { price, company, logo },
-              } = await iexCloudAPI.batch(
-                [symbol],
-                ['company', 'logo', 'price']
-              ));
-              dbShare = await prisma.share.create({
-                data: {
-                  symbol,
-                  ...(only(company, [
-                    'companyName',
-                    'issueType',
-                    'description',
-                    'exchange',
-                    'sector',
-                    'industry',
-                    'country',
-                    'website',
-                  ]) as any),
-                  logo: logo.url,
-                },
-              });
-            }
-
-            price = price || (await iexCloudAPI.price(symbol));
-
-            return prisma.watchlistShares.create({
-              data: {
-                watchlist: {
-                  connect: {
-                    id: +watchlistId,
-                  },
-                },
-                share: {
-                  connect: {
-                    id: dbShare.id,
-                  },
-                },
-                price,
-              },
-            });
-          },
+          resolve: addShareToWatchlistResolver,
         });
       },
     }),

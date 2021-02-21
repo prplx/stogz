@@ -3,8 +3,13 @@ import { useRouter } from 'next/router';
 import { withPageAuthRequired } from '@auth0/nextjs-auth0';
 import ShareContainer from '../../containers/share';
 import Layout from 'components/Layout';
+import User from 'types/user';
 
-const SymbolPage: NextPage = ({ user }: any) => {
+type Props = {
+  user: User;
+};
+
+const SymbolPage: NextPage<Props> = ({ user }) => {
   const router = useRouter();
 
   return (

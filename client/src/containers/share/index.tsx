@@ -14,7 +14,7 @@ export default function ShareContainer({ symbol }: Props) {
   }, []);
 
   return (
-    <Flex p={[4, 4, 6]} wrap="wrap" h="100%">
+    <Flex p={0} wrap="wrap" h="100%">
       {rendered && (
         <TradingViewWidget
           symbol={symbol}

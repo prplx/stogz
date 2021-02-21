@@ -25,7 +25,7 @@ type Props = {
   onAdd: (symbol: SearchSymbol_symbolSearch) => void;
 };
 
-export default function AddWatchlistModal({
+export default function AddShareModal({
   isOpen,
   onClose,
   isLoading,
@@ -72,6 +72,7 @@ export default function AddWatchlistModal({
       motionPreset="slideInBottom"
       closeOnOverlayClick={!isLoading}
       closeOnEsc={!isLoading}
+      isCentered
     >
       <ModalOverlay />
       <ModalContent>
