@@ -9,7 +9,7 @@ export default jwt({
     rateLimit: true,
     cache: true,
     cacheMaxEntries: 5,
-    cacheMaxAge: 10 * 60 * 60 * 1000,
+    cacheMaxAge: 72 * 60 * 60 * 1000,
   }),
   audience: config.auth0Audience,
   issuer: config.auth0Issuer,

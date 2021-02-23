@@ -6,12 +6,13 @@ import {
   nonNull,
   idArg,
   stringArg,
+  intArg,
   fieldAuthorizePlugin,
   mutationType,
   asNexusMethod,
 } from 'nexus';
 import { nexusPrisma } from 'nexus-plugin-prisma';
-import { transformAlphaVantageSymbolSearchResponse, only } from './helpers';
+import { transformAlphaVantageSymbolSearchResponse } from './helpers';
 import { GraphQLDateTime } from 'graphql-iso-date';
 import watchlistSharesResolver from './resolvers/watchlistShares';
 import addShareToWatchlistResolver from './resolvers/addShareToWatchlist';
@@ -26,6 +27,7 @@ export default makeSchema({
         module: require.resolve('../../node_modules/.prisma/client/index.d.ts'),
         alias: 'PrismaClient',
       },
+      { module: require.resolve('./types/iexCloud.ts'), alias: 'IEX' },
     ],
   },
   contextType: {
@@ -104,15 +106,32 @@ export default makeSchema({
     objectType({
       name: 'ShareQuote',
       definition(t) {
+        t.int('shareId');
         t.string('symbol');
         t.string('companyName');
         t.float('latestPrice');
         t.float('change');
         t.float('changePercent');
-        t.float('latestVolume');
-        t.float('open');
-        t.float('low');
-        t.float('high');
+        t.float('latestVolume', {
+          resolve(source) {
+            return source.latestVolume || null;
+          },
+        });
+        t.float('open', {
+          resolve(source) {
+            return source.open || null;
+          },
+        });
+        t.float('low', {
+          resolve(source) {
+            return source.low || null;
+          },
+        });
+        t.float('high', {
+          resolve(source) {
+            return source.hight || null;
+          },
+        });
         t.float('addedPrice');
         t.float('latestUpdate');
         // @ts-ignore because Nexus is a crap
@@ -159,7 +178,7 @@ export default makeSchema({
         t.nonNull.field('createWatchlist', {
           type: 'Watchlist',
           args: {
-            name: nonNull(stringArg({ description: 'title of the watchlist' })),
+            name: nonNull(stringArg()),
           },
           resolve(_, { name }, { ctx, prisma }) {
             return prisma.watchlist.create({
@@ -171,9 +190,25 @@ export default makeSchema({
           type: 'WatchlistShares',
           args: {
             symbol: nonNull(stringArg()),
-            watchlistId: nonNull(idArg({ description: 'id of the watchlist' })),
+            watchlistId: nonNull(idArg()),
           },
           resolve: addShareToWatchlistResolver,
+        });
+        t.nonNull.field('removeShareFromWatchList', {
+          type: 'WatchlistShares',
+          args: {
+            shareId: nonNull(intArg()),
+            watchlistId: nonNull(intArg()),
+          },
+          async resolve(_, { shareId, watchlistId }, { ctx, prisma }) {
+            const watchlist = await prisma.watchlist.findFirst({
+              where: { id: watchlistId, userId: ctx.state.user.id },
+            });
+            if (!watchlist) return ctx.resp.end(404);
+            return prisma.watchlistShares.delete({
+              where: { shareId_watchlistId: { shareId, watchlistId } },
+            });
+          },
         });
       },
     }),

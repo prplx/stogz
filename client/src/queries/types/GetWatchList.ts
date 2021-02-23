@@ -9,18 +9,19 @@
 
 export interface GetWatchList_watchlist_shares {
   __typename: "ShareQuote";
+  shareId: number | null;
   symbol: string | null;
   companyName: string | null;
   latestPrice: number | null;
   change: number | null;
   changePercent: number | null;
-  latestVolume: string | null;
+  latestVolume: number | null;
   latestUpdate: number | null;
   addedAt: any | null;
   addedPrice: number | null;
-  open: string | null;
-  low: string | null;
-  high: string | null;
+  open: number | null;
+  low: number | null;
+  high: number | null;
   changeSinceAdded: number | null;
   changePercentSinceAdded: number | null;
 }

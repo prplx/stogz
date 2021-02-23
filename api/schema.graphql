@@ -19,16 +19,9 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 scalar DateTime
 
 type Mutation {
-  addShareToWatchlist(
-    symbol: String!
-
-    """id of the watchlist"""
-    watchlistId: ID!
-  ): WatchlistShares!
-  createWatchlist(
-    """title of the watchlist"""
-    name: String!
-  ): Watchlist!
+  addShareToWatchlist(symbol: String!, watchlistId: ID!): WatchlistShares!
+  createWatchlist(name: String!): Watchlist!
+  removeShareFromWatchList(shareId: Int!, watchlistId: Int!): WatchlistShares!
 }
 
 type Query {
@@ -69,6 +62,7 @@ type ShareQuote {
   latestVolume: Float
   low: Float
   open: Float
+  shareId: Int
   symbol: String
 }
 

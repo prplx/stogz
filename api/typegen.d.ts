@@ -3,6 +3,7 @@
  * Do not make changes to this file directly
  */
 
+import * as IEX from "./src/types/iexCloud"
 import * as PrismaClient from "./../node_modules/.prisma/client/index"
 import { Context } from "./src/context"
 import { FieldAuthorizeResolver } from "nexus/dist/plugins/fieldAuthorizePlugin"
@@ -66,22 +67,7 @@ export interface NexusGenObjects {
   Mutation: {};
   Query: {};
   Share: PrismaClient.Share;
-  ShareQuote: { // root type
-    addedAt?: NexusGenScalars['DateTime'] | null; // DateTime
-    addedPrice?: number | null; // Float
-    change?: number | null; // Float
-    changePercent?: number | null; // Float
-    changePercentSinceAdded?: number | null; // Float
-    changeSinceAdded?: number | null; // Float
-    companyName?: string | null; // String
-    high?: number | null; // Float
-    latestPrice?: number | null; // Float
-    latestUpdate?: number | null; // Float
-    latestVolume?: number | null; // Float
-    low?: number | null; // Float
-    open?: number | null; // Float
-    symbol?: string | null; // String
-  }
+  ShareQuote: IEX.ShareQuote;
   User: PrismaClient.User;
   Watchlist: PrismaClient.Watchlist;
   WatchlistShares: PrismaClient.WatchlistShares;
@@ -111,6 +97,7 @@ export interface NexusGenFieldTypes {
   Mutation: { // field return type
     addShareToWatchlist: NexusGenRootTypes['WatchlistShares']; // WatchlistShares!
     createWatchlist: NexusGenRootTypes['Watchlist']; // Watchlist!
+    removeShareFromWatchList: NexusGenRootTypes['WatchlistShares']; // WatchlistShares!
   }
   Query: { // field return type
     symbolSearch: Array<NexusGenRootTypes['AlphaVantageSymbol'] | null> | null; // [AlphaVantageSymbol]
@@ -142,6 +129,7 @@ export interface NexusGenFieldTypes {
     latestVolume: number | null; // Float
     low: number | null; // Float
     open: number | null; // Float
+    shareId: number | null; // Int
     symbol: string | null; // String
   }
   User: { // field return type
@@ -178,6 +166,7 @@ export interface NexusGenFieldTypeNames {
   Mutation: { // field return type name
     addShareToWatchlist: 'WatchlistShares'
     createWatchlist: 'Watchlist'
+    removeShareFromWatchList: 'WatchlistShares'
   }
   Query: { // field return type name
     symbolSearch: 'AlphaVantageSymbol'
@@ -209,6 +198,7 @@ export interface NexusGenFieldTypeNames {
     latestVolume: 'Float'
     low: 'Float'
     open: 'Float'
+    shareId: 'Int'
     symbol: 'String'
   }
   User: { // field return type name
@@ -239,6 +229,10 @@ export interface NexusGenArgTypes {
     }
     createWatchlist: { // args
       name: string; // String!
+    }
+    removeShareFromWatchList: { // args
+      shareId: number; // Int!
+      watchlistId: number; // Int!
     }
   }
   Query: {

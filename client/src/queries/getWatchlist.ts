@@ -6,6 +6,7 @@ export default gql`
       id
       name
       shares {
+        shareId
         symbol
         companyName
         latestPrice

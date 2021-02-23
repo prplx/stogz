@@ -19,6 +19,7 @@ const watchlistShares: FieldResolver<'Watchlist', 'shares'> = async (
       return {
         ...acc,
         [curr.share.symbol]: {
+          shareId: curr.shareId,
           addedAt: curr.createdAt,
           addedPrice: curr.price,
         },

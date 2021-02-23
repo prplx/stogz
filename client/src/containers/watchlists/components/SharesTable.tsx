@@ -1,4 +1,4 @@
-import { useMemo, useCallback, useRef } from 'react';
+import { useMemo, useCallback, useRef, useState, useEffect } from 'react';
 import NextLink from 'next/link';
 import {
   Table,
@@ -31,6 +31,7 @@ import {
   Button,
   useDisclosure,
 } from '@chakra-ui/react';
+import { ApolloError } from '@apollo/client';
 import styled from '@emotion/styled';
 import { TiDelete } from 'react-icons/ti';
 import { MdSettings } from 'react-icons/md';
@@ -40,6 +41,8 @@ import { GetWatchList_watchlist } from 'queries/types/GetWatchList';
 
 type Props = {
   shares: GetWatchList_watchlist['shares'];
+  onRemove: (shareId: number) => Promise<any>;
+  isRemoving: boolean;
 };
 
 const numberFormat = Intl.NumberFormat('en', { notation: 'compact' });
@@ -54,7 +57,7 @@ const columnsWithSort = new Set([
   'latestUpdate',
 ]);
 
-export default function SharesTable({ shares }: Props) {
+export default function SharesTable({ shares, onRemove, isRemoving }: Props) {
   const sortType = useCallback(
     (field: string) => (a: any, b: any) => {
       if (a.original[field] > b.original[field]) return 1;
@@ -92,19 +95,19 @@ export default function SharesTable({ shares }: Props) {
       {
         Header: 'Open',
         accessor: 'open',
-        Cell: ({ row: { values } }) => values.open.toFixed(2),
+        Cell: ({ row: { values } }) => values.open?.toFixed(2) || null,
         disableSortBy: true,
       },
       {
         Header: 'High',
         accessor: 'high',
-        Cell: ({ row: { values } }) => values.high.toFixed(2),
+        Cell: ({ row: { values } }) => values.high?.toFixed(2) || null,
         disableSortBy: true,
       },
       {
         Header: 'Low',
         accessor: 'low',
-        Cell: ({ row: { values } }) => values.low.toFixed(2),
+        Cell: ({ row: { values } }) => values.low?.toFixed(2) || null,
         disableSortBy: true,
       },
       {
@@ -170,7 +173,8 @@ export default function SharesTable({ shares }: Props) {
       {
         Header: 'Volume',
         accessor: 'latestVolume',
-        Cell: ({ row: { values } }) => numberFormat.format(values.latestVolume),
+        Cell: ({ row: { values } }) =>
+          values.latestVolume ? numberFormat.format(values.latestVolume) : null,
       },
       {
         Header: 'Updated',
@@ -210,6 +214,15 @@ export default function SharesTable({ shares }: Props) {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = useRef();
+  const [symbolToDelete, setSymbolToDelete] = useState<{
+    shareId: number;
+    symbol: string;
+  }>(null!);
+
+  const removeShare = async (shareId: number) => {
+    await onRemove(shareId);
+    onClose();
+  };
 
   return (
     <>
@@ -317,7 +330,7 @@ export default function SharesTable({ shares }: Props) {
             prepareRow(row);
             return (
               <StyledTr {...row.getRowProps()}>
-                {row.cells.map((cell, i) => (
+                {row.cells.map(cell => (
                   <Td {...cell.getCellProps()} pl={0}>
                     {cell.render('Cell')}
                   </Td>
@@ -332,7 +345,13 @@ export default function SharesTable({ shares }: Props) {
                     minW="unset"
                     transition="none"
                     visibility="hidden"
-                    onClick={onOpen}
+                    onClick={() => {
+                      setSymbolToDelete({
+                        symbol: row.values.symbol,
+                        shareId: row.original['shareId'],
+                      });
+                      onOpen();
+                    }}
                     _hover={{
                       background: 'none',
                       opacity: 0.6,
@@ -364,13 +383,18 @@ export default function SharesTable({ shares }: Props) {
           <AlertDialogHeader>Delete Symbol</AlertDialogHeader>
           <AlertDialogCloseButton />
           <AlertDialogBody>
-            Are you sure you want to delete Symbol from the watchlist?
+            {`Are you sure you want to delete ${symbolToDelete?.symbol} from the watchlist?`}
           </AlertDialogBody>
           <AlertDialogFooter>
             <Button ref={cancelRef} onClick={onClose}>
               No
             </Button>
-            <Button colorScheme="blue" ml={3}>
+            <Button
+              colorScheme="red"
+              ml={3}
+              onClick={() => removeShare(symbolToDelete.shareId)}
+              isLoading={isRemoving}
+            >
               Yes
             </Button>
           </AlertDialogFooter>

@@ -26,6 +26,8 @@ import { FetchWatchlists } from '../../queries/types/FetchWatchlists';
 import { GetWatchList } from '../../queries/types/GetWatchList';
 import createWatchlistMutation from '../../mutations/createWatchlist';
 import { CreateWatchlist } from '../../mutations/types/CreateWatchlist';
+import removeShareFromWatchlistMutation from '../../mutations/removeShareFromWatchlist';
+import { RemoveShareFromWatchlist } from '../../mutations/types/RemoveShareFromWatchlist';
 import addShareToWatchlistMutation from '../../mutations/addShareToWatchlist';
 import { AddShareToWatchlist } from '../../mutations/types/AddShareToWatchlist';
 import AddWatchlistModal from './components/AddWatchlistModal';
@@ -66,7 +68,7 @@ export default function WatchlistsContainer() {
     createWatchlist,
     { loading: loadingCreateWatchlist, error: errorCreateWatchlist },
   ] = useMutation<CreateWatchlist>(createWatchlistMutation, {
-    async update() {
+    async onCompleted() {
       onWatchlistModalClose();
       setNewWatchlistInputValue('');
       await refetchWatchlists();
@@ -77,9 +79,17 @@ export default function WatchlistsContainer() {
     addShareToWatchlist,
     { loading: loadingAddShareToWatchlist, error: errorAddShareToWatchlist },
   ] = useMutation<AddShareToWatchlist>(addShareToWatchlistMutation, {
-    async update() {
+    async onCompleted() {
       await refetchWatchlist();
       onShareModalClose();
+    },
+  });
+  const [
+    removeShareFromWatchlist,
+    { loading: loadingRemoveShare, error: errorRemoveShare },
+  ] = useMutation<RemoveShareFromWatchlist>(removeShareFromWatchlistMutation, {
+    async onCompleted() {
+      await refetchWatchlist();
     },
   });
 
@@ -96,7 +106,11 @@ export default function WatchlistsContainer() {
 
   return (
     <>
-      {(errorWatchlist || errorWatchlists || errorCreateWatchlist) && (
+      {(errorWatchlist ||
+        errorWatchlists ||
+        errorCreateWatchlist ||
+        errorAddShareToWatchlist ||
+        errorRemoveShare) && (
         <Alert status="error">
           <AlertIcon />
           <AlertTitle mr={2}>An error occured while getting data.</AlertTitle>
@@ -176,7 +190,18 @@ export default function WatchlistsContainer() {
                   )}
                   {Boolean(watchlistData?.watchlist.shares.length) && (
                     <Box mt={8}>
-                      <SharesTable shares={watchlistData.watchlist.shares} />
+                      <SharesTable
+                        shares={watchlistData.watchlist.shares}
+                        onRemove={(shareId: number) =>
+                          removeShareFromWatchlist({
+                            variables: {
+                              shareId,
+                              watchlistId: w.id,
+                            },
+                          })
+                        }
+                        isRemoving={loadingRemoveShare}
+                      />
                     </Box>
                   )}
                 </TabPanel>
