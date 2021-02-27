@@ -32,7 +32,7 @@ export default function AddShareModal({
   onAdd,
 }: Props) {
   const client = useApolloClient();
-  const [symbol, setSymbol] = useState('');
+  const [fragment, setFragment] = useState('');
   const [inputValue, setInputValue] = useState('');
   const [
     selectedSymbol,
@@ -41,11 +41,13 @@ export default function AddShareModal({
   const [
     searchSymbol,
     { loading: loadingSearchSymbol, error: loadingSearchSymbolError, data },
-  ] = useLazyQuery<SearchSymbol>(searchSymbolQuery, { variables: { symbol } });
+  ] = useLazyQuery<SearchSymbol>(searchSymbolQuery, {
+    variables: { fragment },
+  });
   const debouncedSearchSymbol = useCallback(
     debounce((value: string) => {
       if (!value) return;
-      setSymbol(value);
+      setFragment(value);
       searchSymbol();
     }, 200),
     []
@@ -63,7 +65,7 @@ export default function AddShareModal({
         setSelectedSymbol(null);
         client.writeQuery({
           query: searchSymbolQuery,
-          variables: { symbol },
+          variables: { fragment },
           data: { symbolSearch: null },
         });
         onClose();
@@ -76,14 +78,15 @@ export default function AddShareModal({
     >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Start typing a symbol</ModalHeader>
+        <ModalHeader>Enter a symbol</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <Select
+            placeholder="AAPL, TSLA, etc."
             options={data?.symbolSearch?.map(s => ({
               ...s,
               value: s.symbol,
-              label: `${s.symbol}: ${s.name}`,
+              label: `${s.symbol}: ${s.securityName} - ${s.exchange}`,
             }))}
             onInputChange={handleInputChange}
             isLoading={loadingSearchSymbol}

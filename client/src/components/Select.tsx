@@ -9,7 +9,7 @@ const getStyles = (_: string): Styles<any, any> => ({
   }),
   placeholder: p => ({
     ...p,
-    color: 'currentColor',
+    color: 'grey',
   }),
   input: p => ({
     ...p,
@@ -31,6 +31,9 @@ const getStyles = (_: string): Styles<any, any> => ({
       : isSelected
       ? '#4299e1'
       : 'transparent',
+  }),
+  indicatorSeparator: () => ({
+    display: 'none',
   }),
 });
 

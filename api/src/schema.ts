@@ -10,9 +10,9 @@ import {
   fieldAuthorizePlugin,
   mutationType,
   asNexusMethod,
+  list,
 } from 'nexus';
 import { nexusPrisma } from 'nexus-plugin-prisma';
-import { transformAlphaVantageSymbolSearchResponse } from './helpers';
 import { GraphQLDateTime } from 'graphql-iso-date';
 import watchlistSharesResolver from './resolvers/watchlistShares';
 import addShareToWatchlistResolver from './resolvers/addShareToWatchlist';
@@ -64,6 +64,7 @@ export default makeSchema({
         t.model.id();
         t.model.name();
         t.model.user();
+        t.model.hiddenColumns();
         t.list.field('shares', {
           type: 'ShareQuote',
           resolve: watchlistSharesResolver,
@@ -91,16 +92,12 @@ export default makeSchema({
       },
     }),
     objectType({
-      name: 'AlphaVantageSymbol',
+      name: 'IEXSearchResult',
       definition(t) {
         t.string('symbol');
-        t.string('name');
-        t.string('type');
+        t.string('exchange');
+        t.string('securityName');
         t.string('region');
-        t.string('marketOpen');
-        t.string('marketClose');
-        t.string('timezone');
-        t.string('currency');
       },
     }),
     objectType({
@@ -162,13 +159,12 @@ export default makeSchema({
           },
         });
         t.list.field('symbolSearch', {
-          type: 'AlphaVantageSymbol',
+          type: 'IEXSearchResult',
           args: {
-            symbol: nonNull(stringArg({ description: 'symbol' })),
+            fragment: nonNull(stringArg({ description: 'fragment' })),
           },
-          async resolve(_, { symbol }, { dataSources: { alphaVantageAPI } }) {
-            const data = await alphaVantageAPI.symbolSearch(symbol);
-            return transformAlphaVantageSymbolSearchResponse(data);
+          async resolve(_, { fragment }, { dataSources: { iexCloudAPI } }) {
+            return iexCloudAPI.search(fragment);
           },
         });
       },
@@ -207,6 +203,30 @@ export default makeSchema({
             if (!watchlist) return ctx.resp.end(404);
             return prisma.watchlistShares.delete({
               where: { shareId_watchlistId: { shareId, watchlistId } },
+            });
+          },
+        });
+        t.nonNull.field('updateWatchlistHiddenColumns', {
+          type: 'Watchlist',
+          args: {
+            watchlistId: nonNull(intArg()),
+            columns: nonNull(list(stringArg())),
+          },
+          async resolve(_, { watchlistId, columns }, { ctx, prisma }) {
+            const watchlist = await prisma.watchlist.findFirst({
+              where: {
+                id: watchlistId,
+                userId: ctx.state.user.id,
+              },
+            });
+            if (!watchlist) return ctx.resp.end(404);
+            return prisma.watchlist.update({
+              where: {
+                id: watchlistId,
+              },
+              data: {
+                hiddenColumns: columns,
+              },
             });
           },
         });

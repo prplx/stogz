@@ -14,8 +14,8 @@ export default class IExCloud extends RESTDataSource {
     request.params.set('token', this.token);
   }
 
-  async search(symbol: string) {
-    return this.get(`/search/${symbol}`);
+  async search(fragment: string) {
+    return this.get(`/search/${fragment}`);
   }
 
   async quote(symbol: string) {

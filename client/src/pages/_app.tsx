@@ -3,6 +3,7 @@ import { ApolloProvider, ApolloClient } from '@apollo/client';
 import { ChakraProvider, extendTheme } from '@chakra-ui/react';
 import { UserProvider } from '@auth0/nextjs-auth0';
 import withApollo from '../lib/withApollo';
+import { Helmet } from 'react-helmet';
 
 export const theme = extendTheme({
   config: {
@@ -17,6 +18,10 @@ export const theme = extendTheme({
       },
     },
   },
+  fonts: {
+    heading: 'IBM Plex Sans, sans-serif',
+    body: 'IBM Plex Sans, sans-serif',
+  },
 });
 
 function MyApp({
@@ -25,13 +30,22 @@ function MyApp({
   apollo,
 }: AppProps & { apollo: ApolloClient<null> }) {
   return (
-    <ApolloProvider client={apollo}>
-      <ChakraProvider theme={theme}>
-        <UserProvider>
-          <Component {...pageProps} />
-        </UserProvider>
-      </ChakraProvider>
-    </ApolloProvider>
+    <>
+      <Helmet>
+        <link rel="preconnect" href="https://fonts.gstatic.com" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&display=swap"
+          rel="stylesheet"
+        />
+      </Helmet>
+      <ApolloProvider client={apollo}>
+        <ChakraProvider theme={theme}>
+          <UserProvider>
+            <Component {...pageProps} />
+          </UserProvider>
+        </ChakraProvider>
+      </ApolloProvider>
+    </>
   );
 }
 

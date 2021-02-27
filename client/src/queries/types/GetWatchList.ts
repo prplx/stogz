@@ -31,6 +31,7 @@ export interface GetWatchList_watchlist {
   id: number;
   name: string;
   shares: (GetWatchList_watchlist_shares | null)[] | null;
+  hiddenColumns: any | null;
 }
 
 export interface GetWatchList {

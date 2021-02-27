@@ -249,6 +249,18 @@
               "deprecationReason": null
             },
             {
+              "name": "hiddenColumns",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Json",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "shares",
               "description": null,
               "args": [],
@@ -460,7 +472,7 @@
         },
         {
           "kind": "OBJECT",
-          "name": "AlphaVantageSymbol",
+          "name": "IEXSearchResult",
           "description": null,
           "fields": [
             {
@@ -476,7 +488,7 @@
               "deprecationReason": null
             },
             {
-              "name": "name",
+              "name": "exchange",
               "description": null,
               "args": [],
               "type": {
@@ -488,7 +500,7 @@
               "deprecationReason": null
             },
             {
-              "name": "type",
+              "name": "securityName",
               "description": null,
               "args": [],
               "type": {
@@ -501,54 +513,6 @@
             },
             {
               "name": "region",
-              "description": null,
-              "args": [],
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "name": "marketOpen",
-              "description": null,
-              "args": [],
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "name": "marketClose",
-              "description": null,
-              "args": [],
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "name": "timezone",
-              "description": null,
-              "args": [],
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "name": "currency",
               "description": null,
               "args": [],
               "type": {
@@ -809,8 +773,8 @@
               "description": null,
               "args": [
                 {
-                  "name": "symbol",
-                  "description": "symbol",
+                  "name": "fragment",
+                  "description": "fragment",
                   "type": {
                     "kind": "NON_NULL",
                     "name": null,
@@ -828,7 +792,7 @@
                 "name": null,
                 "ofType": {
                   "kind": "OBJECT",
-                  "name": "AlphaVantageSymbol",
+                  "name": "IEXSearchResult",
                   "ofType": null
                 }
               },
@@ -976,6 +940,55 @@
               },
               "isDeprecated": false,
               "deprecationReason": null
+            },
+            {
+              "name": "updateWatchlistHiddenColumns",
+              "description": null,
+              "args": [
+                {
+                  "name": "watchlistId",
+                  "description": null,
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "Int",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "columns",
+                  "description": null,
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "LIST",
+                      "name": null,
+                      "ofType": {
+                        "kind": "SCALAR",
+                        "name": "String",
+                        "ofType": null
+                      }
+                    }
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "Watchlist",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
             }
           ],
           "inputFields": null,
@@ -1000,6 +1013,16 @@
               "defaultValue": null
             }
           ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "SCALAR",
+          "name": "Json",
+          "description": null,
+          "fields": null,
+          "inputFields": null,
           "interfaces": null,
           "enumValues": null,
           "possibleTypes": null

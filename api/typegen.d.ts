@@ -51,18 +51,15 @@ export interface NexusGenScalars {
   Boolean: boolean
   ID: string
   DateTime: any
+  Json: any
 }
 
 export interface NexusGenObjects {
-  AlphaVantageSymbol: { // root type
-    currency?: string | null; // String
-    marketClose?: string | null; // String
-    marketOpen?: string | null; // String
-    name?: string | null; // String
+  IEXSearchResult: { // root type
+    exchange?: string | null; // String
     region?: string | null; // String
+    securityName?: string | null; // String
     symbol?: string | null; // String
-    timezone?: string | null; // String
-    type?: string | null; // String
   }
   Mutation: {};
   Query: {};
@@ -84,23 +81,20 @@ export type NexusGenRootTypes = NexusGenObjects
 export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 
 export interface NexusGenFieldTypes {
-  AlphaVantageSymbol: { // field return type
-    currency: string | null; // String
-    marketClose: string | null; // String
-    marketOpen: string | null; // String
-    name: string | null; // String
+  IEXSearchResult: { // field return type
+    exchange: string | null; // String
     region: string | null; // String
+    securityName: string | null; // String
     symbol: string | null; // String
-    timezone: string | null; // String
-    type: string | null; // String
   }
   Mutation: { // field return type
     addShareToWatchlist: NexusGenRootTypes['WatchlistShares']; // WatchlistShares!
     createWatchlist: NexusGenRootTypes['Watchlist']; // Watchlist!
     removeShareFromWatchList: NexusGenRootTypes['WatchlistShares']; // WatchlistShares!
+    updateWatchlistHiddenColumns: NexusGenRootTypes['Watchlist']; // Watchlist!
   }
   Query: { // field return type
-    symbolSearch: Array<NexusGenRootTypes['AlphaVantageSymbol'] | null> | null; // [AlphaVantageSymbol]
+    symbolSearch: Array<NexusGenRootTypes['IEXSearchResult'] | null> | null; // [IEXSearchResult]
     watchlist: NexusGenRootTypes['Watchlist'] | null; // Watchlist
     watchlists: Array<NexusGenRootTypes['Watchlist'] | null> | null; // [Watchlist]
   }
@@ -142,6 +136,7 @@ export interface NexusGenFieldTypes {
     watchlists: NexusGenRootTypes['Watchlist'][]; // [Watchlist!]!
   }
   Watchlist: { // field return type
+    hiddenColumns: NexusGenScalars['Json'] | null; // Json
     id: number; // Int!
     name: string; // String!
     shares: Array<NexusGenRootTypes['ShareQuote'] | null> | null; // [ShareQuote]
@@ -153,23 +148,20 @@ export interface NexusGenFieldTypes {
 }
 
 export interface NexusGenFieldTypeNames {
-  AlphaVantageSymbol: { // field return type name
-    currency: 'String'
-    marketClose: 'String'
-    marketOpen: 'String'
-    name: 'String'
+  IEXSearchResult: { // field return type name
+    exchange: 'String'
     region: 'String'
+    securityName: 'String'
     symbol: 'String'
-    timezone: 'String'
-    type: 'String'
   }
   Mutation: { // field return type name
     addShareToWatchlist: 'WatchlistShares'
     createWatchlist: 'Watchlist'
     removeShareFromWatchList: 'WatchlistShares'
+    updateWatchlistHiddenColumns: 'Watchlist'
   }
   Query: { // field return type name
-    symbolSearch: 'AlphaVantageSymbol'
+    symbolSearch: 'IEXSearchResult'
     watchlist: 'Watchlist'
     watchlists: 'Watchlist'
   }
@@ -211,6 +203,7 @@ export interface NexusGenFieldTypeNames {
     watchlists: 'Watchlist'
   }
   Watchlist: { // field return type name
+    hiddenColumns: 'Json'
     id: 'Int'
     name: 'String'
     shares: 'ShareQuote'
@@ -234,10 +227,14 @@ export interface NexusGenArgTypes {
       shareId: number; // Int!
       watchlistId: number; // Int!
     }
+    updateWatchlistHiddenColumns: { // args
+      columns: Array<string | null>; // [String]!
+      watchlistId: number; // Int!
+    }
   }
   Query: {
     symbolSearch: { // args
-      symbol: string; // String!
+      fragment: string; // String!
     }
     watchlist: { // args
       id: string; // ID!

@@ -20,16 +20,18 @@ import {
   Stack,
 } from '@chakra-ui/react';
 import { useQuery, useLazyQuery, useMutation } from '@apollo/client';
-import fetchWatchlistsQuery from '../../queries/fetchWatchlists';
-import getWatchlistQuery from '../../queries/getWatchlist';
-import { FetchWatchlists } from '../../queries/types/FetchWatchlists';
-import { GetWatchList } from '../../queries/types/GetWatchList';
-import createWatchlistMutation from '../../mutations/createWatchlist';
-import { CreateWatchlist } from '../../mutations/types/CreateWatchlist';
-import removeShareFromWatchlistMutation from '../../mutations/removeShareFromWatchlist';
-import { RemoveShareFromWatchlist } from '../../mutations/types/RemoveShareFromWatchlist';
-import addShareToWatchlistMutation from '../../mutations/addShareToWatchlist';
-import { AddShareToWatchlist } from '../../mutations/types/AddShareToWatchlist';
+import fetchWatchlistsQuery from 'queries/fetchWatchlists';
+import getWatchlistQuery from 'queries/getWatchlist';
+import { FetchWatchlists } from 'queries/types/FetchWatchlists';
+import { GetWatchList } from 'queries/types/GetWatchList';
+import createWatchlistMutation from 'mutations/createWatchlist';
+import { CreateWatchlist } from 'mutations/types/CreateWatchlist';
+import removeShareFromWatchlistMutation from 'mutations/removeShareFromWatchlist';
+import { RemoveShareFromWatchlist } from 'mutations/types/RemoveShareFromWatchlist';
+import addShareToWatchlistMutation from 'mutations/addShareToWatchlist';
+import { AddShareToWatchlist } from 'mutations/types/AddShareToWatchlist';
+import { UpdateWatchlistHiddenColumns } from 'mutations/types/UpdateWatchlistHiddenColumns';
+import updateHiddenWatchlistColumnsMutation from 'mutations/updateWatchlistHiddenColumns';
 import AddWatchlistModal from './components/AddWatchlistModal';
 import AddShareModal from './components/AddShareModal';
 import SharesTable from './components/SharesTable';
@@ -63,6 +65,7 @@ export default function WatchlistsContainer() {
     },
   ] = useLazyQuery<GetWatchList>(getWatchlistQuery, {
     variables: { id: watchlists && watchlists[tabIndex]?.id },
+    pollInterval: 15 * 60 * 1000,
   });
   const [
     createWatchlist,
@@ -80,8 +83,8 @@ export default function WatchlistsContainer() {
     { loading: loadingAddShareToWatchlist, error: errorAddShareToWatchlist },
   ] = useMutation<AddShareToWatchlist>(addShareToWatchlistMutation, {
     async onCompleted() {
-      await refetchWatchlist();
       onShareModalClose();
+      await refetchWatchlist();
     },
   });
   const [
@@ -92,6 +95,13 @@ export default function WatchlistsContainer() {
       await refetchWatchlist();
     },
   });
+  const [
+    updateWatchlistHiddenColumns,
+    ,
+  ] = useMutation<UpdateWatchlistHiddenColumns>(
+    updateHiddenWatchlistColumnsMutation,
+    {}
+  );
 
   const handleTabsChange = async (index: number) => {
     setTabIndex(index);
@@ -99,9 +109,7 @@ export default function WatchlistsContainer() {
 
   useEffect(() => {
     if (!watchlists?.length) return;
-    (async () => {
-      getWatchlist();
-    })();
+    getWatchlist();
   }, [watchlists?.length]);
 
   return (
@@ -192,6 +200,7 @@ export default function WatchlistsContainer() {
                     <Box mt={8}>
                       <SharesTable
                         shares={watchlistData.watchlist.shares}
+                        hiddenColumns={watchlistData.watchlist.hiddenColumns}
                         onRemove={(shareId: number) =>
                           removeShareFromWatchlist({
                             variables: {
@@ -201,6 +210,11 @@ export default function WatchlistsContainer() {
                           })
                         }
                         isRemoving={loadingRemoveShare}
+                        updateHiddenColumns={columns =>
+                          updateWatchlistHiddenColumns({
+                            variables: { watchlistId: w.id, columns },
+                          })
+                        }
                       />
                     </Box>
                   )}

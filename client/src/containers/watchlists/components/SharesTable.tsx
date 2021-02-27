@@ -1,4 +1,4 @@
-import { useMemo, useCallback, useRef, useState, useEffect } from 'react';
+import { useMemo, useCallback, useRef, useState } from 'react';
 import NextLink from 'next/link';
 import {
   Table,
@@ -31,7 +31,6 @@ import {
   Button,
   useDisclosure,
 } from '@chakra-ui/react';
-import { ApolloError } from '@apollo/client';
 import styled from '@emotion/styled';
 import { TiDelete } from 'react-icons/ti';
 import { MdSettings } from 'react-icons/md';
@@ -41,8 +40,10 @@ import { GetWatchList_watchlist } from 'queries/types/GetWatchList';
 
 type Props = {
   shares: GetWatchList_watchlist['shares'];
+  hiddenColumns: string[] | null;
   onRemove: (shareId: number) => Promise<any>;
   isRemoving: boolean;
+  updateHiddenColumns: (columns: string[]) => void;
 };
 
 const numberFormat = Intl.NumberFormat('en', { notation: 'compact' });
@@ -57,7 +58,13 @@ const columnsWithSort = new Set([
   'latestUpdate',
 ]);
 
-export default function SharesTable({ shares, onRemove, isRemoving }: Props) {
+export default function SharesTable({
+  shares,
+  onRemove,
+  isRemoving,
+  hiddenColumns: hiddenColumnsFromProps,
+  updateHiddenColumns,
+}: Props) {
   const sortType = useCallback(
     (field: string) => (a: any, b: any) => {
       if (a.original[field] > b.original[field]) return 1;
@@ -201,7 +208,7 @@ export default function SharesTable({ shares, onRemove, isRemoving }: Props) {
       data: shares,
       initialState: {
         sortBy: [{ id: 'addedAt' }],
-        hiddenColumns: [
+        hiddenColumns: hiddenColumnsFromProps || [
           'changeSinceAdded',
           'changePercentSinceAdded',
           'addedAt',
@@ -222,6 +229,10 @@ export default function SharesTable({ shares, onRemove, isRemoving }: Props) {
   const removeShare = async (shareId: number) => {
     await onRemove(shareId);
     onClose();
+  };
+
+  const collectHidden = () => {
+    console.log();
   };
 
   return (
@@ -266,7 +277,16 @@ export default function SharesTable({ shares, onRemove, isRemoving }: Props) {
                 );
               })}
               <Th px={0} textAlign="right">
-                <Popover placement="bottom-end">
+                <Popover
+                  placement="bottom-end"
+                  onClose={() =>
+                    updateHiddenColumns(
+                      allColumns.reduce((acc, curr) => {
+                        return [...acc, ...(curr.isVisible ? [] : [curr.id])];
+                      }, [])
+                    )
+                  }
+                >
                   <PopoverTrigger>
                     <IconButton
                       aria-label="Settings"

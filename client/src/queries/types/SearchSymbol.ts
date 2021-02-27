@@ -8,15 +8,11 @@
 // ====================================================
 
 export interface SearchSymbol_symbolSearch {
-  __typename: "AlphaVantageSymbol";
-  name: string | null;
+  __typename: "IEXSearchResult";
+  securityName: string | null;
   symbol: string | null;
-  type: string | null;
   region: string | null;
-  currency: string | null;
-  marketOpen: string | null;
-  marketClose: string | null;
-  timezone: string | null;
+  exchange: string | null;
 }
 
 export interface SearchSymbol {
@@ -24,5 +20,5 @@ export interface SearchSymbol {
 }
 
 export interface SearchSymbolVariables {
-  symbol: string;
+  fragment: string;
 }

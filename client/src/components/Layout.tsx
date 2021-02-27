@@ -11,10 +11,13 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
+  Icon,
+  Tooltip,
 } from '@chakra-ui/react';
 import { IconButton } from '@chakra-ui/react';
 import { FaBriefcase, FaUser, FaBinoculars } from 'react-icons/fa';
 import { FiLogOut } from 'react-icons/fi';
+import { SiScribd } from 'react-icons/si';
 
 type Props = {
   children?: ReactNode;
@@ -44,26 +47,33 @@ const Layout = ({
           justify="space-between"
           as="nav"
           background="gray.800"
-          py="4"
+          py="1.2rem"
         >
-          <Box align="center">
-            <IconButton
-              icon={<FaBinoculars />}
-              aria-label="Watchlists"
-              colorScheme="blue"
-              variant="outline"
-              isActive={pathname === '/watchlists'}
-              onClick={() => push('/watchlists')}
-            />
-            <IconButton
-              icon={<FaBriefcase />}
-              aria-label="Portfolios"
-              colorScheme="blue"
-              variant="outline"
-              isActive={pathname === '/portfolios'}
-              onClick={() => push('/portfolios')}
-              mt={4}
-            />
+          <Box>
+            <Icon as={SiScribd} w={6} h={6} mt={3} />
+          </Box>
+          <Box align="center" mb="auto" mt={10}>
+            <Tooltip label="Watchlists" aria-label="Watchlists tooltip">
+              <IconButton
+                icon={<FaBinoculars size={20} />}
+                aria-label="Watchlists"
+                colorScheme="blue"
+                variant="ghost"
+                isActive={pathname === '/watchlists'}
+                onClick={() => push('/watchlists')}
+              />
+            </Tooltip>
+            <Tooltip label="Portfolios" aria-label="Portfolios label">
+              <IconButton
+                icon={<FaBriefcase size={20} />}
+                aria-label="Portfolios"
+                colorScheme="blue"
+                variant="ghost"
+                isActive={pathname === '/portfolios'}
+                onClick={() => push('/portfolios')}
+                mt={4}
+              />
+            </Tooltip>
           </Box>
           <Box align="center">
             <Menu>
@@ -85,7 +95,7 @@ const Layout = ({
           </Box>
         </Flex>
         <Flex as="main" flex={1} direction="column">
-          <Flex as="header" p={4} pb={2} direction="column">
+          <Flex as="header" p={6} pb={3} direction="column">
             <Heading as="h1" size="lg">
               {title}
             </Heading>
