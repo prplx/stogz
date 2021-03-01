@@ -1,6 +1,7 @@
 import { NextApiHandler } from 'next';
 import axios, { AxiosRequestConfig } from 'axios';
 import { getAccessToken } from '@auth0/nextjs-auth0';
+import { getStringEnv } from 'env-guard';
 
 const handler: NextApiHandler = async (req, res) => {
   try {
@@ -11,7 +12,7 @@ const handler: NextApiHandler = async (req, res) => {
 
     try {
       const response = await axios({
-        url: process.env.API_URL,
+        url: getStringEnv('API_URL'),
         method: method as AxiosRequestConfig['method'],
         data: body,
         headers: {
