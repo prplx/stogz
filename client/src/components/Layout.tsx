@@ -78,7 +78,7 @@ const Layout = ({
           <Box align="center">
             <Menu>
               <MenuButton>
-                <Avatar w={10} h={10} name={user.name} src={user.picture} />
+                <Avatar w={10} h={10} name={user?.name} src={user?.picture} />
               </MenuButton>
               <MenuList>
                 <MenuItem icon={<FaUser />} onClick={() => push('/profile')}>

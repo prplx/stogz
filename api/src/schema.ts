@@ -131,7 +131,6 @@ export default makeSchema({
         });
         t.float('addedPrice');
         t.float('latestUpdate');
-        // @ts-ignore because Nexus is a crap
         t.dateTime('addedAt');
         t.float('changeSinceAdded');
         t.float('changePercentSinceAdded');

@@ -14,7 +14,6 @@
     "@chakra-ui/react": "^1.1.4",
     "@emotion/react": "^11.1.4",
     "@emotion/styled": "^11.0.0",
-    "apollo-boost": "^0.4.9",
     "axios": "latest",
     "date-fns": "^2.17.0",
     "env-guard": "^1.0.3",
