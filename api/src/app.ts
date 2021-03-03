@@ -3,7 +3,12 @@ import { prisma } from './services/prisma';
 import { ApolloServer } from 'apollo-server-koa';
 import cors from '@koa/cors';
 import schema from './schema';
-import { jwtAuth, saveUserToDB, obtainUserInfo } from './middlewares';
+import {
+  jwtAuth,
+  saveUserToDB,
+  obtainUserInfo,
+  addTestUser,
+} from './middlewares';
 import IExCloudAPI from './apollo/iexCloud';
 import _ from './services/redis';
 
@@ -26,6 +31,7 @@ async function main() {
     .use(jwtAuth)
     .use(saveUserToDB)
     .use(obtainUserInfo)
+    .use(addTestUser)
     .use(apollo.getMiddleware({ cors: false }));
 }
 
