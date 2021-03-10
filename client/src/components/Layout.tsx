@@ -18,11 +18,12 @@ import { IconButton } from '@chakra-ui/react';
 import { FaBriefcase, FaUser, FaBinoculars } from 'react-icons/fa';
 import { FiLogOut } from 'react-icons/fi';
 import { SiScribd } from 'react-icons/si';
+import User from 'types/user';
 
 type Props = {
   children?: ReactNode;
   title?: string;
-  user?: any;
+  user?: User;
 };
 
 const Layout = ({

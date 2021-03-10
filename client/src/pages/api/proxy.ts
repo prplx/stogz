@@ -25,7 +25,7 @@ const handler: NextApiHandler = async (req, res) => {
       res.status(error.response?.status || 400).end(error.message);
     }
   } catch (error) {
-    res.status(error.status || 401).end(error.message);
+    res.redirect('/api/auth/logout');
   }
 };
 

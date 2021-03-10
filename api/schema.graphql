@@ -23,6 +23,27 @@ type Mutation {
   updateWatchlistHiddenColumns(columns: [String]!, watchlistId: Int!): Watchlist!
 }
 
+type Portfolio {
+  createdAt: DateTime!
+  id: Int!
+  name: String!
+  shares(after: PortfolioSharesWhereUniqueInput, before: PortfolioSharesWhereUniqueInput, first: Int, last: Int): [PortfolioShares!]!
+  user: User!
+}
+
+type PortfolioShares {
+  createdAt: DateTime!
+}
+
+input PortfolioSharesShareIdPortfolioIdCompoundUniqueInput {
+  portfolioId: Int!
+  shareId: Int!
+}
+
+input PortfolioSharesWhereUniqueInput {
+  shareId_portfolioId: PortfolioSharesShareIdPortfolioIdCompoundUniqueInput
+}
+
 type Query {
   symbolSearch(
     """fragment"""

@@ -14,8 +14,9 @@ import {
 } from 'nexus';
 import { nexusPrisma } from 'nexus-plugin-prisma';
 import { GraphQLDateTime } from 'graphql-iso-date';
-import watchlistSharesResolver from './resolvers/watchlistShares';
-import addShareToWatchlistResolver from './resolvers/addShareToWatchlist';
+import { Portfolio, PorfolioShares } from './portfolio';
+import watchlistSharesResolver from '../resolvers/watchlistShares';
+import addShareToWatchlistResolver from '../resolvers/addShareToWatchlist';
 
 const GQLDate = asNexusMethod(GraphQLDateTime, 'dateTime');
 
@@ -27,16 +28,16 @@ export default makeSchema({
         module: require.resolve('../../node_modules/.prisma/client/index.d.ts'),
         alias: 'PrismaClient',
       },
-      { module: require.resolve('./types/iexCloud.ts'), alias: 'IEX' },
+      { module: require.resolve('../types/iexCloud.ts'), alias: 'IEX' },
     ],
   },
   contextType: {
-    module: path.join(__dirname, './context.ts'),
+    module: path.join(__dirname, '../context.ts'),
     export: 'Context',
   },
   outputs: {
-    typegen: path.join(__dirname, '../typegen.d.ts'),
-    schema: path.join(__dirname, '../schema.graphql'),
+    typegen: path.join(__dirname, '../../typegen.d.ts'),
+    schema: path.join(__dirname, '../../schema.graphql'),
   },
   plugins: [
     nexusPrisma({
@@ -46,6 +47,8 @@ export default makeSchema({
   ],
   types: [
     GQLDate,
+    Portfolio,
+    PorfolioShares,
     objectType({
       name: 'User',
       definition(t) {

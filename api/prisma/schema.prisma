@@ -1,10 +1,10 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-}
-
-generator client {
-  provider = "prisma-client-js"
 }
 
 model User {
@@ -15,53 +15,102 @@ model User {
   givenName  String?
   familyName String?
   picture    String?
+  portfolios Portfolio[]
   watchlists Watchlist[]
 
-  @@index([sub])
-  @@index([email])
+  @@index([email], name: "users.email_index")
+  @@index([sub], name: "users.sub_index")
   @@map("users")
 }
 
 model Share {
   id          Int               @id @default(autoincrement())
   symbol      String            @unique
-  companyName String
-  exchange    String
-  industry    String
   description String
-  issueType   String
-  sector      String
+  exchange    String
   country     String?
+  sector      String
+  industry    String
+  companyName String
+  issueType   String
   website     String?
   logo        String?
-  createAt    DateTime          @default(now())
+  createdAt   DateTime          @default(now())
+  deals       Deals[]
+  portfolios  PortfolioShares[]
   watchlists  WatchlistShares[]
 
-  @@index([companyName])
-  @@index([symbol])
+  @@index([companyName], name: "shares.companyName_index")
+  @@index([symbol], name: "shares.symbol_index")
   @@map("shares")
 }
 
 model Watchlist {
   id            Int               @id @default(autoincrement())
-  createAt      DateTime          @default(now())
   name          String
-  user          User              @relation(fields: [userId], references: [id])
   userId        Int
-  shares        WatchlistShares[]
   hiddenColumns Json?
+  createdAt     DateTime          @default(now())
+  user          User              @relation(fields: [userId], references: [id])
+  deals         Deals[]
+  shares        WatchlistShares[]
 
   @@map("watchlists")
 }
 
+model Portfolio {
+  id            Int               @id @default(autoincrement())
+  name          String
+  userId        Int
+  hiddenColumns Json?
+  createdAt     DateTime          @default(now())
+  user          User              @relation(fields: [userId], references: [id])
+  shares        PortfolioShares[]
+
+  @@map("portfolios")
+}
+
 model WatchlistShares {
-  share       Share     @relation(fields: [shareId], references: [id])
   shareId     Int
-  watchlist   Watchlist @relation(fields: [watchlistId], references: [id])
   watchlistId Int
   createdAt   DateTime  @default(now())
   price       Float
+  share       Share     @relation(fields: [shareId], references: [id])
+  watchlist   Watchlist @relation(fields: [watchlistId], references: [id])
 
   @@id([shareId, watchlistId])
   @@map("watchlists_shares")
+}
+
+model PortfolioShares {
+  shareId     Int
+  portfolioId Int
+  createdAt   DateTime  @default(now())
+  portfolio   Portfolio @relation(fields: [portfolioId], references: [id])
+  share       Share     @relation(fields: [shareId], references: [id])
+
+  @@id([shareId, portfolioId])
+  @@map("portfolios_shares")
+}
+
+model Deals {
+  id          Int       @id @default(autoincrement())
+  type        DealType
+  date        DateTime
+  watchlistId Int
+  shareId     Int
+  quantity    Int
+  price       Float
+  fee         Float?
+  createdAt   DateTime  @default(now())
+  share       Share     @relation(fields: [shareId], references: [id])
+  watchlist   Watchlist @relation(fields: [watchlistId], references: [id])
+
+  @@index([type, watchlistId], name: "deals.type_watchlistId_index")
+  @@map("deals")
+}
+
+enum DealType {
+  buy
+  sell
 }

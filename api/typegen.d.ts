@@ -4,7 +4,7 @@
  */
 
 import * as IEX from "./src/types/iexCloud"
-import * as PrismaClient from "./../node_modules/.prisma/client/index"
+import * as PrismaClient from "./node_modules/.prisma/client/index"
 import { Context } from "./src/context"
 import { FieldAuthorizeResolver } from "nexus/dist/plugins/fieldAuthorizePlugin"
 import { core } from "nexus"
@@ -36,6 +36,13 @@ declare global {
 }
 
 export interface NexusGenInputs {
+  PortfolioSharesShareIdPortfolioIdCompoundUniqueInput: { // input type
+    portfolioId: number; // Int!
+    shareId: number; // Int!
+  }
+  PortfolioSharesWhereUniqueInput: { // input type
+    shareId_portfolioId?: NexusGenInputs['PortfolioSharesShareIdPortfolioIdCompoundUniqueInput'] | null; // PortfolioSharesShareIdPortfolioIdCompoundUniqueInput
+  }
   WatchlistWhereUniqueInput: { // input type
     id?: number | null; // Int
   }
@@ -62,6 +69,8 @@ export interface NexusGenObjects {
     symbol?: string | null; // String
   }
   Mutation: {};
+  Portfolio: PrismaClient.Portfolio;
+  PortfolioShares: PrismaClient.PortfolioShares;
   Query: {};
   Share: PrismaClient.Share;
   ShareQuote: IEX.ShareQuote;
@@ -92,6 +101,16 @@ export interface NexusGenFieldTypes {
     createWatchlist: NexusGenRootTypes['Watchlist']; // Watchlist!
     removeShareFromWatchList: NexusGenRootTypes['WatchlistShares']; // WatchlistShares!
     updateWatchlistHiddenColumns: NexusGenRootTypes['Watchlist']; // Watchlist!
+  }
+  Portfolio: { // field return type
+    createdAt: NexusGenScalars['DateTime']; // DateTime!
+    id: number; // Int!
+    name: string; // String!
+    shares: NexusGenRootTypes['PortfolioShares'][]; // [PortfolioShares!]!
+    user: NexusGenRootTypes['User']; // User!
+  }
+  PortfolioShares: { // field return type
+    createdAt: NexusGenScalars['DateTime']; // DateTime!
   }
   Query: { // field return type
     symbolSearch: Array<NexusGenRootTypes['IEXSearchResult'] | null> | null; // [IEXSearchResult]
@@ -159,6 +178,16 @@ export interface NexusGenFieldTypeNames {
     createWatchlist: 'Watchlist'
     removeShareFromWatchList: 'WatchlistShares'
     updateWatchlistHiddenColumns: 'Watchlist'
+  }
+  Portfolio: { // field return type name
+    createdAt: 'DateTime'
+    id: 'Int'
+    name: 'String'
+    shares: 'PortfolioShares'
+    user: 'User'
+  }
+  PortfolioShares: { // field return type name
+    createdAt: 'DateTime'
   }
   Query: { // field return type name
     symbolSearch: 'IEXSearchResult'
@@ -230,6 +259,14 @@ export interface NexusGenArgTypes {
     updateWatchlistHiddenColumns: { // args
       columns: Array<string | null>; // [String]!
       watchlistId: number; // Int!
+    }
+  }
+  Portfolio: {
+    shares: { // args
+      after?: NexusGenInputs['PortfolioSharesWhereUniqueInput'] | null; // PortfolioSharesWhereUniqueInput
+      before?: NexusGenInputs['PortfolioSharesWhereUniqueInput'] | null; // PortfolioSharesWhereUniqueInput
+      first?: number | null; // Int
+      last?: number | null; // Int
     }
   }
   Query: {

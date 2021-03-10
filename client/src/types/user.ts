@@ -1,3 +1,4 @@
-type User = { [key: string]: any };
-
-export default User;
+export default interface User {
+  name: string;
+  picture: string;
+}
