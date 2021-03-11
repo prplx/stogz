@@ -13,11 +13,13 @@ import {
   MenuItem,
   Icon,
   Tooltip,
+  Button,
+  IconButton,
 } from '@chakra-ui/react';
-import { IconButton } from '@chakra-ui/react';
 import { FaBriefcase, FaUser, FaBinoculars } from 'react-icons/fa';
 import { FiLogOut } from 'react-icons/fi';
 import { SiScribd } from 'react-icons/si';
+import { CgMenuGridO } from 'react-icons/cg';
 import User from 'types/user';
 
 type Props = {
@@ -49,6 +51,7 @@ const Layout = ({
           as="nav"
           background="gray.800"
           py="1.2rem"
+          display={{ sm: 'none', md: 'flex' }}
         >
           <Box>
             <Icon as={SiScribd} w={6} h={6} mt={3} />
@@ -96,10 +99,24 @@ const Layout = ({
           </Box>
         </Flex>
         <Flex as="main" flex={1} direction="column">
-          <Flex as="header" p={6} pb={3} direction="column">
+          <Flex
+            as="header"
+            p={6}
+            pb={3}
+            justifyContent="space-between"
+            alignItems="center"
+          >
             <Heading as="h1" size="lg">
               {title}
             </Heading>
+            <Flex display={{ sm: 'flex', md: 'none' }}>
+              <IconButton
+                aria-label="Menu"
+                colorScheme="white"
+                variant="ghost"
+                icon={<CgMenuGridO size={30} />}
+              />
+            </Flex>
           </Flex>
           <Divider borderColor="gray.600" />
           {children}

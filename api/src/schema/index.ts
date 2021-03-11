@@ -14,7 +14,12 @@ import {
 } from 'nexus';
 import { nexusPrisma } from 'nexus-plugin-prisma';
 import { GraphQLDateTime } from 'graphql-iso-date';
-import { Portfolio, PorfolioShares } from './portfolio';
+import {
+  Portfolio,
+  PorfolioShares,
+  FetchPortfolios,
+  CreatePortfolio,
+} from './portfolio';
 import watchlistSharesResolver from '../resolvers/watchlistShares';
 import addShareToWatchlistResolver from '../resolvers/addShareToWatchlist';
 
@@ -49,6 +54,8 @@ export default makeSchema({
     GQLDate,
     Portfolio,
     PorfolioShares,
+    FetchPortfolios,
+    CreatePortfolio,
     objectType({
       name: 'User',
       definition(t) {

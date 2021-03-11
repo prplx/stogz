@@ -1,9 +1,18 @@
 import App, { AppProps, AppContext } from 'next/app';
+import Router from 'next/router';
 import { ApolloProvider, ApolloClient } from '@apollo/client';
 import { ChakraProvider, extendTheme } from '@chakra-ui/react';
 import { UserProvider } from '@auth0/nextjs-auth0';
-import withApollo from '../lib/withApollo';
 import { Helmet } from 'react-helmet';
+import NProgress from 'nprogress';
+import withApollo from '../lib/withApollo';
+import 'nprogress/nprogress.css';
+
+Router.events.on('routeChangeStart', () => NProgress.start());
+Router.events.on('routeChangeComplete', () => {
+  return NProgress.done();
+});
+Router.events.on('routeChangeError', () => NProgress.done());
 
 export const theme = extendTheme({
   config: {
@@ -15,6 +24,9 @@ export const theme = extendTheme({
       'html, body': {
         color: 'white',
         background: 'gray.700',
+      },
+      '#nprogress .spinner': {
+        display: 'none',
       },
     },
   },

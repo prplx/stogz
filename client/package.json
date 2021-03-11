@@ -22,6 +22,7 @@
     "lodash.debounce": "^4.0.8",
     "next": "latest",
     "next-with-apollo": "^5.1.0",
+    "nprogress": "^0.2.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-helmet": "^6.1.0",
@@ -32,6 +33,7 @@
   "devDependencies": {
     "@types/lodash.debounce": "^4.0.6",
     "@types/node": "^12.12.21",
+    "@types/nprogress": "^0.2.0",
     "@types/react": "^16.9.16",
     "@types/react-dom": "^16.9.4",
     "@types/react-helmet": "^6.1.0",

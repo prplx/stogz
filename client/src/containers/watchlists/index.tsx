@@ -133,7 +133,7 @@ export default function WatchlistsContainer() {
         {loadingWatchlists && <Spinner color="white" />}
         {watchlists && watchlists.length === 0 && (
           <Heading size="md" color="gray.500">
-            There are no any watchlists yet. Create one!
+            There are no any watchlists yet. Create the first one!
           </Heading>
         )}
         <Tabs
@@ -154,7 +154,7 @@ export default function WatchlistsContainer() {
               variant="ghost"
               ml="4"
             >
-              + Create new watchlist
+              + Create watchlist
             </Button>
           </TabList>
           {Boolean(watchlists?.length) && (

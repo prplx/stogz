@@ -98,6 +98,7 @@ export interface NexusGenFieldTypes {
   }
   Mutation: { // field return type
     addShareToWatchlist: NexusGenRootTypes['WatchlistShares']; // WatchlistShares!
+    createPortfolio: NexusGenRootTypes['Portfolio']; // Portfolio!
     createWatchlist: NexusGenRootTypes['Watchlist']; // Watchlist!
     removeShareFromWatchList: NexusGenRootTypes['WatchlistShares']; // WatchlistShares!
     updateWatchlistHiddenColumns: NexusGenRootTypes['Watchlist']; // Watchlist!
@@ -113,6 +114,7 @@ export interface NexusGenFieldTypes {
     createdAt: NexusGenScalars['DateTime']; // DateTime!
   }
   Query: { // field return type
+    portfolios: Array<NexusGenRootTypes['Portfolio'] | null> | null; // [Portfolio]
     symbolSearch: Array<NexusGenRootTypes['IEXSearchResult'] | null> | null; // [IEXSearchResult]
     watchlist: NexusGenRootTypes['Watchlist'] | null; // Watchlist
     watchlists: Array<NexusGenRootTypes['Watchlist'] | null> | null; // [Watchlist]
@@ -175,6 +177,7 @@ export interface NexusGenFieldTypeNames {
   }
   Mutation: { // field return type name
     addShareToWatchlist: 'WatchlistShares'
+    createPortfolio: 'Portfolio'
     createWatchlist: 'Watchlist'
     removeShareFromWatchList: 'WatchlistShares'
     updateWatchlistHiddenColumns: 'Watchlist'
@@ -190,6 +193,7 @@ export interface NexusGenFieldTypeNames {
     createdAt: 'DateTime'
   }
   Query: { // field return type name
+    portfolios: 'Portfolio'
     symbolSearch: 'IEXSearchResult'
     watchlist: 'Watchlist'
     watchlists: 'Watchlist'
@@ -248,6 +252,9 @@ export interface NexusGenArgTypes {
     addShareToWatchlist: { // args
       symbol: string; // String!
       watchlistId: string; // ID!
+    }
+    createPortfolio: { // args
+      name: string; // String!
     }
     createWatchlist: { // args
       name: string; // String!

@@ -1,8 +1,8 @@
 import { NextPage } from 'next';
 import { withPageAuthRequired } from '@auth0/nextjs-auth0';
-import { Flex, Button } from '@chakra-ui/react';
 import Layout from '../components/Layout';
 import User from 'types/user';
+import PortfoliosContainer from 'containers/portfolios';
 
 type Props = {
   user: User;
@@ -11,9 +11,7 @@ type Props = {
 const PortfoliosPage: NextPage<Props> = ({ user }) => {
   return (
     <Layout title="Portfolios" user={user}>
-      <Flex p={4}>
-        <Button colorScheme="blue">+ Create new portfolio</Button>
-      </Flex>
+      <PortfoliosContainer />
     </Layout>
   );
 };
