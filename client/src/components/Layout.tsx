@@ -48,8 +48,8 @@ const Layout = ({
       <Menu>
         <MenuButton>
           <Avatar
-            w={{ sm: '4rem', md: '2.5rem' }}
-            h={{ sm: '4rem', md: '2.5rem' }}
+            w={{ sm: '3rem', md: '2.5rem' }}
+            h={{ sm: '3rem', md: '2.5rem' }}
             name={user?.name}
             src={user?.picture}
           />
@@ -179,7 +179,7 @@ const Layout = ({
                         <Link
                           w="100%"
                           d="block"
-                          p={6}
+                          p={4}
                           borderBottom="1px solid #4A5568"
                           textAlign="center"
                           fontWeight={600}

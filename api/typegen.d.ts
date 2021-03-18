@@ -114,6 +114,7 @@ export interface NexusGenFieldTypes {
     createdAt: NexusGenScalars['DateTime']; // DateTime!
   }
   Query: { // field return type
+    portfolio: NexusGenRootTypes['Portfolio'] | null; // Portfolio
     portfolios: Array<NexusGenRootTypes['Portfolio'] | null> | null; // [Portfolio]
     symbolSearch: Array<NexusGenRootTypes['IEXSearchResult'] | null> | null; // [IEXSearchResult]
     watchlist: NexusGenRootTypes['Watchlist'] | null; // Watchlist
@@ -193,6 +194,7 @@ export interface NexusGenFieldTypeNames {
     createdAt: 'DateTime'
   }
   Query: { // field return type name
+    portfolio: 'Portfolio'
     portfolios: 'Portfolio'
     symbolSearch: 'IEXSearchResult'
     watchlist: 'Watchlist'
@@ -277,11 +279,14 @@ export interface NexusGenArgTypes {
     }
   }
   Query: {
+    portfolio: { // args
+      id: number; // Int!
+    }
     symbolSearch: { // args
       fragment: string; // String!
     }
     watchlist: { // args
-      id: string; // ID!
+      id: number; // Int!
     }
   }
   User: {

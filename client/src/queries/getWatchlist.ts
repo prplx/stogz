@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 
 export default gql`
-  query GetWatchList($id: ID!) {
+  query GetWatchList($id: Int!) {
     watchlist(id: $id) {
       id
       name
