@@ -32,8 +32,8 @@ import addShareToWatchlistMutation from 'mutations/addShareToWatchlist';
 import { AddShareToWatchlist } from 'mutations/types/AddShareToWatchlist';
 import { UpdateWatchlistHiddenColumns } from 'mutations/types/UpdateWatchlistHiddenColumns';
 import updateHiddenWatchlistColumnsMutation from 'mutations/updateWatchlistHiddenColumns';
-import AddWatchlistModal from './components/AddWatchlistModal';
-import AddShareModal from './components/AddShareModal';
+import AddListModal from 'components/AddListModal';
+import AddSymbolModal from './components/AddSymbolModal';
 import SharesTable from './components/SharesTable';
 
 export default function WatchlistsContainer() {
@@ -45,9 +45,9 @@ export default function WatchlistsContainer() {
     onClose: onWatchlistModalClose,
   } = useDisclosure();
   const {
-    isOpen: isShareModalOpen,
-    onOpen: onShareModalOpen,
-    onClose: onShareModalClose,
+    isOpen: isAddSymbolModalOpen,
+    onOpen: onAddSymbolModalOpen,
+    onClose: onAddSymbolModalClose,
   } = useDisclosure();
   const {
     loading: loadingWatchlists,
@@ -83,7 +83,7 @@ export default function WatchlistsContainer() {
     { loading: loadingAddShareToWatchlist, error: errorAddShareToWatchlist },
   ] = useMutation<AddShareToWatchlist>(addShareToWatchlistMutation, {
     async onCompleted() {
-      onShareModalClose();
+      onAddSymbolModalClose();
       await refetchWatchlist();
     },
   });
@@ -97,7 +97,6 @@ export default function WatchlistsContainer() {
   });
   const [
     updateWatchlistHiddenColumns,
-    ,
   ] = useMutation<UpdateWatchlistHiddenColumns>(
     updateHiddenWatchlistColumnsMutation,
     {}
@@ -172,11 +171,11 @@ export default function WatchlistsContainer() {
                     <Button
                       colorScheme="blue"
                       disabled={loadingWatchlists}
-                      onClick={onShareModalOpen}
+                      onClick={onAddSymbolModalOpen}
                       variant="outline"
                       ml="4"
                     >
-                      + Add symbols
+                      + Add symbol
                     </Button>
                   </Flex>
                   {watchlistData?.watchlist.shares.length === 0 && (
@@ -224,18 +223,19 @@ export default function WatchlistsContainer() {
           )}
         </Tabs>
       </Flex>
-      <AddWatchlistModal
-        newWatchlistInputValue={newWatchlistInputValue}
-        setNewWatchlistInputValue={setNewWatchlistInputValue}
+      <AddListModal
+        newListInputValue={newWatchlistInputValue}
+        setNewListInputValue={setNewWatchlistInputValue}
         isOpen={isWatchlistModalOpen}
         isLoading={loadingCreateWatchlist}
         onClose={onWatchlistModalClose}
-        onCreate={createWatchlist}
+        onCreate={(name: string) => createWatchlist({ variables: { name } })}
+        title="New watchlist"
       />
-      <AddShareModal
+      <AddSymbolModal
         isLoading={loadingAddShareToWatchlist}
-        isOpen={isShareModalOpen}
-        onClose={onShareModalClose}
+        isOpen={isAddSymbolModalOpen}
+        onClose={onAddSymbolModalClose}
         onAdd={data =>
           addShareToWatchlist({
             variables: { ...data, watchlistId: watchlistData.watchlist.id },

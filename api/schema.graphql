@@ -46,6 +46,7 @@ input PortfolioSharesWhereUniqueInput {
 }
 
 type Query {
+  portfolio(id: Int!): Portfolio
   portfolios: [Portfolio]
   symbolSearch(
     """fragment"""
@@ -53,7 +54,7 @@ type Query {
   ): [IEXSearchResult]
   watchlist(
     """id of the watchlist"""
-    id: ID!
+    id: Int!
   ): Watchlist
   watchlists: [Watchlist]
 }

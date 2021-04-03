@@ -1,7 +1,6 @@
 import { NextPage, GetServerSidePropsContext } from 'next';
 import { Flex, Heading, Button } from '@chakra-ui/react';
 import { getSession } from '@auth0/nextjs-auth0';
-import { redirect } from '../helpers';
 
 const IndexPage: NextPage = () => {
   return (
@@ -18,6 +17,12 @@ export default IndexPage;
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const session = getSession(ctx.req, ctx.res);
-  if (session?.user) redirect('/watchlists', ctx);
+  if (session?.user)
+    return {
+      redirect: {
+        destination: '/watchlists',
+        permanent: false,
+      },
+    };
   return { props: {} };
 };

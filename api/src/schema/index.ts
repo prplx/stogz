@@ -19,6 +19,7 @@ import {
   PorfolioShares,
   FetchPortfolios,
   CreatePortfolio,
+  GetPortfolio,
 } from './portfolio';
 import watchlistSharesResolver from '../resolvers/watchlistShares';
 import addShareToWatchlistResolver from '../resolvers/addShareToWatchlist';
@@ -56,6 +57,7 @@ export default makeSchema({
     PorfolioShares,
     FetchPortfolios,
     CreatePortfolio,
+    GetPortfolio,
     objectType({
       name: 'User',
       definition(t) {
@@ -151,11 +153,11 @@ export default makeSchema({
         t.field('watchlist', {
           type: 'Watchlist',
           args: {
-            id: nonNull(idArg({ description: 'id of the watchlist' })),
+            id: nonNull(intArg({ description: 'id of the watchlist' })),
           },
           resolve(_, { id }, { ctx, prisma }) {
             return prisma.watchlist.findFirst({
-              where: { id: +id, userId: ctx.state.user.id },
+              where: { id, userId: ctx.state.user.id },
             });
           },
         });
@@ -164,6 +166,7 @@ export default makeSchema({
           resolve(_, __, { ctx, prisma }) {
             return prisma.watchlist.findMany({
               where: { userId: ctx.state.user.id },
+              orderBy: [{ id: 'asc' }],
             });
           },
         });

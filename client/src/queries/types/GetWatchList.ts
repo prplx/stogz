@@ -39,5 +39,5 @@ export interface GetWatchList {
 }
 
 export interface GetWatchListVariables {
-  id: string;
+  id: number;
 }

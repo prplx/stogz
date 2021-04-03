@@ -14,18 +14,20 @@ type Props = {
   isOpen: boolean;
   onClose: () => void;
   isLoading: boolean;
-  onCreate: (data: { [key: string]: any }) => void;
-  newWatchlistInputValue: string;
-  setNewWatchlistInputValue: (value: string) => void;
+  onCreate: (value: string) => void;
+  newListInputValue: string;
+  setNewListInputValue: (value: string) => void;
+  title: string;
 };
 
-export default function AddWatchlistModal({
+export default function AddListModal({
   isOpen,
   onClose,
   isLoading,
-  newWatchlistInputValue,
-  setNewWatchlistInputValue,
+  newListInputValue,
+  setNewListInputValue,
   onCreate,
+  title,
 }: Props) {
   return (
     <Modal
@@ -40,12 +42,12 @@ export default function AddWatchlistModal({
     >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>New watchlist</ModalHeader>
+        <ModalHeader>{title}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <Input
-            value={newWatchlistInputValue}
-            onChange={e => setNewWatchlistInputValue(e.target.value)}
+            value={newListInputValue}
+            onChange={e => setNewListInputValue(e.target.value)}
             placeholder="Title"
             disabled={isLoading}
             autoFocus
@@ -55,10 +57,8 @@ export default function AddWatchlistModal({
         <ModalFooter>
           <Button
             colorScheme="blue"
-            onClick={() =>
-              onCreate({ variables: { name: newWatchlistInputValue } })
-            }
-            disabled={!newWatchlistInputValue}
+            onClick={() => onCreate(newListInputValue)}
+            disabled={!newListInputValue}
             isLoading={isLoading}
           >
             Create

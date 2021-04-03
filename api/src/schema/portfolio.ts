@@ -1,4 +1,4 @@
-import { objectType, extendType, nonNull, stringArg } from 'nexus';
+import { objectType, extendType, nonNull, stringArg, intArg } from 'nexus';
 
 export const Portfolio = objectType({
   name: 'Portfolio',
@@ -26,6 +26,27 @@ export const FetchPortfolios = extendType({
       resolve(_, __, { prisma, ctx }) {
         return prisma.portfolio.findMany({
           where: { userId: ctx.state.user.id },
+          orderBy: [{ id: 'asc' }],
+        });
+      },
+    });
+  },
+});
+
+export const GetPortfolio = extendType({
+  type: 'Query',
+  definition(t) {
+    t.field('portfolio', {
+      type: 'Portfolio',
+      args: {
+        id: nonNull(intArg()),
+      },
+      resolve(_, { id }, { prisma, ctx }) {
+        return prisma.portfolio.findFirst({
+          where: {
+            id,
+            userId: ctx.user.id,
+          },
         });
       },
     });
